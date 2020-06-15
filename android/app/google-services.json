@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "845999342416",
+    "firebase_url": "https://ffa-app-40a3a.firebaseio.com",
+    "project_id": "ffa-app-40a3a",
+    "storage_bucket": "ffa-app-40a3a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845999342416:android:4f6cac6b289a072b496255",
+        "android_client_info": {
+          "package_name": "com.example.ffa_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "845999342416-klgi72gjmf4grutcmmerpqkjnc2341su.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOyUHex3pmrLwh10VCTkHW7CC4kPl10ms"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "845999342416-klgi72gjmf4grutcmmerpqkjnc2341su.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
