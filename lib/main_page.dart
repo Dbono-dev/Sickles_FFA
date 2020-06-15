@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:ffa_app/feed_page.dart';
+import 'package:ffa_app/profile_page.dart';
 
 class MainPage extends StatelessWidget {
   @override
@@ -9,13 +10,9 @@ class MainPage extends StatelessWidget {
       child: Scaffold(
         body: TabBarView(
           children: [
-            Container(
-              color: Colors.blue,
-            ),
+            ProfilePage(),
             MainPageBody(),
-            Container(
-              color: Colors.yellow,
-            )
+            FeedPage()
           ]
         ),
         bottomNavigationBar: SizedBox(
