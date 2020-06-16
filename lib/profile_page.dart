@@ -39,11 +39,83 @@ class ProfilePage extends StatelessWidget {
               child: Card(
                 color: Theme.of(context).primaryColor,
                 elevation: 10,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(7.5, 0, 7.5, 0),
+                  child: Row(
+                    children: <Widget>[
+                      Text("Club Meeting", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30),),
+                      Spacer(),
+                      Text("7/11",style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30))
+                    ],
+                  ),
+                ),
               )
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+            child: Container(
+              height: 65,
+              width: 375,
+              child: Card(
+                color: Theme.of(context).primaryColor,
+                elevation: 10,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(7.5, 0, 7.5, 0),
+                  child: Row(
+                    children: <Widget>[
+                      Text("Barbeque", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30),),
+                      Spacer(),
+                      Text("10/21",style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30))
+                    ],
+                  ),
+                ),
+              )
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 15, 0, 0),
+            child: Text("More Actions", style: TextStyle(fontSize: 45, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),),
+          ),
+          Container(
+            height: 179,
+            child: ListView(
+              padding: EdgeInsets.all(0),
+              children: <Widget>[
+                moreActionsTiles(Icons.message, "Send Message", context),
+                moreActionsTiles(Icons.image, "Send Images", context),
+                moreActionsTiles(Icons.settings, "Settings", context)
+              ],
             ),
           )
         ]
+      ),
+    );
+  }
+
+  Widget moreActionsTiles(IconData icon, String title, BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+      child: Container(
+        height: 65,
+        width: 375,
+        child: Card(
+          color: Theme.of(context).primaryColor,
+          elevation: 10,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(7.5, 0, 7.5, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Icon(icon, color: Theme.of(context).accentColor, size: 40,),
+                Text(title,style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35))
+              ],
+            ),
+          ),
+        )
       ),
     );
   }
