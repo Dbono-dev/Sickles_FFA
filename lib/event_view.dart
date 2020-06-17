@@ -1,3 +1,4 @@
+import 'package:ffa_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -19,20 +20,7 @@ class _EventViewPageState extends State<EventViewPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget> [
           Padding(padding: EdgeInsets.fromLTRB(0, 35, 0, 0)),
-          Card(
-            margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-            elevation: 10,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30)
-            ),
-            child: IconButton(
-              iconSize: 45,
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
+          ReturnButton(),
           Padding(
             padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
             child: GestureDetector(

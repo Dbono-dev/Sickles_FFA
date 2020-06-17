@@ -26,3 +26,29 @@ class DatabaseService {
     return memberCollection.document(uid).snapshots().map(_userDataFromSnapshot);
   }
 }
+
+class EventService {
+  
+  final CollectionReference eventsCollection = Firestore.instance.collection('events');
+
+  Future addEvent(String title, String date, String description, String location, String startTime, String endTime, String maxParticipates, String type) async {
+    return await eventsCollection.document(title + date).setData({
+      'title': title,
+      'date': date, 
+      'description': description,
+      'location': location,
+      'start time': startTime,
+      'end time': endTime,
+      'max participates': maxParticipates,
+      'type': type,
+      'participates': []
+    });
+  }
+
+  Future addParticipates(List participates, String title, String date) async {
+    return await eventsCollection.document(title + date).updateData({
+      'participates': participates
+    });
+  }
+
+}

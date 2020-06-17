@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/database.dart';
+import 'package:ffa_app/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:ffa_app/feed_page.dart';
 import 'package:ffa_app/profile_page.dart';
@@ -30,6 +32,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   
   @override
   Widget build(BuildContext context) {
+
+    SizeConfig().init(context);
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -74,6 +79,14 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
 }
 
 class MainPageBody extends StatelessWidget {
+
+  Future getPosts() async {
+    var firestore = Firestore.instance;
+    QuerySnapshot qn = await firestore.collection("events").getDocuments();
+    
+    return qn.documents;
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
@@ -93,38 +106,27 @@ class MainPageBody extends StatelessWidget {
                 Text("Good Evening", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold)),
                 Text(userData.firstName, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold),),
                 Padding(padding: EdgeInsets.all(6)),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage()));
-                  },
-                  child: Container(
-                    height: 400,
-                    width: 330,            
-                    child: Card(
-                      elevation: 10,
-                      color: Theme.of(context).primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        side: BorderSide(width: 1, color: Colors.transparent)
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Column(
-                            children: <Widget> [
-                              Text("Event Title", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, fontWeight: FontWeight.bold),),
-                              Text("Date", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35)),
-                              Text("Description", style: TextStyle(color: Colors.white, fontSize: 30, decoration: TextDecoration.underline)),
-                              Text("This is just where some text to show where the description would go", style: TextStyle(color: Colors.white, fontSize: 25), textAlign: TextAlign.center,),
-                              Spacer(),
-                              Text("Location | Time", style: TextStyle(color: Colors.white, fontSize: 25)),
-                              Text("View Event", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, decoration: TextDecoration.underline, fontWeight: FontWeight.bold))
-                            ]
-                          ),
+                FutureBuilder(
+                  future: getPosts(),
+                  builder: (_, index) {
+                    if(index.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+                    else {
+                      return Container(
+                        color: Colors.transparent,
+                        height: 400,
+                        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        child: ListView.builder(
+                          itemCount: index.data.length,
+                          padding: EdgeInsets.all(0),
+                          itemBuilder: (_, i) {
+                            return eventCard(context, index.data[i]);
+                          },
                         ),
-                      ),
-                    )
-                  ),
+                      );
+                    }
+                  },
                 ),
                 Padding(padding: EdgeInsets.all(10)),        
                 Row(
@@ -141,6 +143,43 @@ class MainPageBody extends StatelessWidget {
             return CircularProgressIndicator();
           }
         }
+      ),
+    );
+  }
+
+  Widget eventCard(BuildContext context, DocumentSnapshot snapshot) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage()));
+      },
+      child: Container(
+        height: 400,
+        width: 330,   
+        color: Colors.transparent,         
+        child: Card(
+          elevation: 10,
+          color: Theme.of(context).primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            side: BorderSide(width: 1, color: Colors.transparent)
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Column(
+                children: <Widget> [
+                  Text(snapshot.data['title'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, fontWeight: FontWeight.bold),),
+                  Text(snapshot.data['date'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 27.5)),
+                  Text("Description", style: TextStyle(color: Colors.white, fontSize: 30, decoration: TextDecoration.underline)),
+                  Text(snapshot.data['description'], style: TextStyle(color: Colors.white, fontSize: 25), textAlign: TextAlign.center,),
+                  Spacer(),
+                  Text(snapshot.data['location'] + " | " + snapshot.data['start time'] + " - " + snapshot.data['end time'], style: TextStyle(color: Colors.white, fontSize: 25)),
+                  Text("View Event", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, decoration: TextDecoration.underline, fontWeight: FontWeight.bold))
+                ]
+              ),
+            ),
+          ),
+        )
       ),
     );
   }

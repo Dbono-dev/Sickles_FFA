@@ -24,3 +24,25 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class ReturnButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Theme.of(context).primaryColor,
+      margin: EdgeInsets.fromLTRB(20, 35, 0, 0),
+      elevation: 10,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30)
+      ),
+      child: IconButton(
+        iconSize: 45,
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        color: Theme.of(context).accentColor,
+      ),
+    );
+  }
+}
