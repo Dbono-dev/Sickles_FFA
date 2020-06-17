@@ -6,6 +6,14 @@ class User {
 
 class UserData {
   final String uid;
+  final List eventDate;
+  final List eventTitle;
+  final String firstName;
+  final String lastName;
+  final int grade;
+  final List clubAttendence;
+  final int permissions;
+  final int studentNum;
 
-  UserData({this.uid});
+  UserData({this.uid, this.eventDate, this.eventTitle, this.firstName, this.lastName, this.grade, this.clubAttendence, this.permissions, this.studentNum});
 }

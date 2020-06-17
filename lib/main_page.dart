@@ -3,13 +3,35 @@ import 'package:ffa_app/feed_page.dart';
 import 'package:ffa_app/profile_page.dart';
 import 'package:ffa_app/event_view.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
+  const MainPage({Key key}) : super(key: key);
+
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin {
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(vsync: this, length: 3, initialIndex: 1);
+  }
+
+  @override 
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         body: TabBarView(
+          controller: _tabController,
           children: [
             ProfilePage(),
             MainPageBody(),
@@ -19,6 +41,7 @@ class MainPage extends StatelessWidget {
         bottomNavigationBar: SizedBox(
           height: 50,
             child: TabBar(
+              controller: _tabController,
               tabs: <Widget>[
                 Tab(
                   icon: Icon(Icons.person, size: 27,),

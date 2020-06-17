@@ -7,7 +7,6 @@ class EventViewPage extends StatefulWidget {
 }
 
 class _EventViewPageState extends State<EventViewPage> {
-
   int x = 0;
   String bottomOfCard = "Tap to show QR Code";
 
