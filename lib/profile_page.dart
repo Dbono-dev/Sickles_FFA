@@ -217,7 +217,7 @@ class ProfilePage extends StatelessWidget {
                 moreActionsTiles(Icons.import_export, "Export Data", context, ExportData()),
                 moreActionsTiles(Icons.image, "View Images", context, ViewImages()),
                 moreActionsTiles(Icons.message, "View Messages", context, ViewMessages()),
-                moreActionsTiles(Icons.settings, "Seetings", context, Settings())
+                moreActionsTiles(Icons.settings, "Settings", context, Settings())
               ],
             ),
           )

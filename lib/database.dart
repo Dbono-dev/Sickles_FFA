@@ -63,3 +63,14 @@ class PostService {
     });
   }
 }
+
+class BugService {
+  final CollectionReference bugsCollection = Firestore.instance.collection('bugs');
+
+  Future reportBug(String bug) async {
+    return await bugsCollection.document(DateTime.now().toString()).setData({
+      'bug': bug,
+      'dateTime': DateTime.now()
+    });
+  }
+}

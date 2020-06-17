@@ -9,9 +9,10 @@ import 'package:ffa_app/user.dart';
 
 class EventViewPage extends StatefulWidget {
 
-  EventViewPage({this.snapshot});
+  EventViewPage({this.snapshot, this.userData});
 
   DocumentSnapshot snapshot;
+  UserData userData;
 
   @override
   _EventViewPageState createState() => _EventViewPageState();
@@ -28,6 +29,19 @@ class _EventViewPageState extends State<EventViewPage> {
 
     if(widget.snapshot.data['participates'].contains(user.uid)) {
       show = false;
+    }
+
+    String theQrContent = widget.snapshot.data['title'] + "/" + widget.userData.uid + "/" + widget.userData.firstName + " " + widget.userData.lastName;
+    String qrContent = "";
+
+    List<int> theListOfInts = new List<int> ();
+
+    for(int i = 0; i < theQrContent.length; i++) {
+      var char = theQrContent[i];
+      int temp = char.codeUnitAt(0) + 5;
+      theListOfInts.add(temp);
+      String theTemp = String.fromCharCode(temp);
+      qrContent += theTemp;
     }
 
     return Scaffold(
@@ -69,7 +83,7 @@ class _EventViewPageState extends State<EventViewPage> {
                           Padding(padding: EdgeInsets.all(2)),
                           x == 0 ? Text("Description", style: TextStyle(fontSize: 35, color: Colors.white, decoration: TextDecoration.underline),) : Container(),
                           x == 0 ? Text(widget.snapshot.data['description'], style: TextStyle(fontSize: 25, color: Colors.white), textAlign: TextAlign.center,): Container(),
-                          x == 1 ? QrImage(data: "This is a test", foregroundColor: Colors.white, size: 225,) : Container(),
+                          x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: 225,) : Container(),
                           Spacer(),
                           Text(bottomOfCard, style: TextStyle(fontSize: 30, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),)
                         ]

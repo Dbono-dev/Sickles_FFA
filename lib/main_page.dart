@@ -134,7 +134,7 @@ class MainPageBody extends StatelessWidget {
                           itemCount: index.data.length,
                           padding: EdgeInsets.all(0),
                           itemBuilder: (_, i) {
-                            return eventCard(context, index.data[i]);
+                            return eventCard(context, index.data[i], userData);
                           },
                         ),
                       );
@@ -160,10 +160,38 @@ class MainPageBody extends StatelessWidget {
     );
   }
 
-  Widget eventCard(BuildContext context, DocumentSnapshot snapshot) {
+  Widget eventCard(BuildContext context, DocumentSnapshot snapshot, UserData userData) {
+
+    String startTimeBack;
+    String endTimeBack;
+    String startTime = snapshot.data['start time'].toString();
+    String endTime = snapshot.data['end time'].toString();
+
+    int startTimeTest = int.parse(snapshot.data['start time'].toString().substring(0, 2));
+
+    if(startTimeTest >= 12) {
+      startTimeTest = startTimeTest - 12;
+      startTimeBack = " pm";
+      startTime = startTimeTest.toString() + startTime.substring(2);
+    }
+    else {
+      startTimeBack = " am";
+    }
+
+    int endTimeTest = int.parse(snapshot.data['end time'].toString().substring(0, 2));
+
+    if(endTimeTest >= 12) {
+      endTimeTest = endTimeTest - 12;
+      endTimeBack = " pm";
+      endTime = endTimeTest.toString() + endTime.substring(2);
+    }
+    else {
+      endTimeBack = " am";
+    }
+
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage(snapshot: snapshot,)));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage(snapshot: snapshot, userData: userData,)));
       },
       child: Container(
         height: 400,
@@ -186,7 +214,8 @@ class MainPageBody extends StatelessWidget {
                   Text("Description", style: TextStyle(color: Colors.white, fontSize: 30, decoration: TextDecoration.underline)),
                   Text(snapshot.data['description'], style: TextStyle(color: Colors.white, fontSize: 25), textAlign: TextAlign.center,),
                   Spacer(),
-                  Text(snapshot.data['location'] + " | " + snapshot.data['start time'] + " - " + snapshot.data['end time'], style: TextStyle(color: Colors.white, fontSize: 25)),
+                  Text(snapshot.data['location'], style: TextStyle(color: Colors.white, fontSize: 25)),
+                  Text(startTime + startTimeBack + " - " + endTime + endTimeBack, style: TextStyle(color: Colors.white, fontSize: 25)),
                   Text("View Event", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, decoration: TextDecoration.underline, fontWeight: FontWeight.bold))
                 ]
               ),
