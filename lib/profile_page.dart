@@ -1,4 +1,5 @@
 import 'package:ffa_app/auth_service.dart';
+import 'package:ffa_app/database.dart';
 import 'package:flutter/material.dart';
 import 'package:ffa_app/admin_pages/add_event.dart';
 import 'package:ffa_app/admin_pages/add_post.dart';
@@ -10,36 +11,53 @@ import 'package:ffa_app/admin_pages/view_messages.dart';
 import 'package:ffa_app/member_pages/send_images.dart';
 import 'package:ffa_app/member_pages/send_message.dart';
 import 'package:ffa_app/settings.dart';
+import 'package:ffa_app/user.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
+
     return Container(
       color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget> [
-          Padding(padding: EdgeInsets.all(20)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Text("First Name", style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor),),
-                  Text("Last Name", style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor),),
-                  Text("Grade", style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor),)
-                ],
-              ),
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: Theme.of(context).primaryColor,
-                child: Text("FL", style: TextStyle(fontSize: 60, color: Theme.of(context).accentColor),),
-              )
-            ],
-          ),
-          officerProfilePage(context)
-        ]
+      child: StreamBuilder<UserData>(
+        stream: DatabaseService(uid: user.uid).userData,
+        builder: (context, snapshot) {
+          UserData userData = snapshot.data;
+
+          if(snapshot.hasData) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget> [
+                Padding(padding: EdgeInsets.all(20)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Text(userData.firstName, style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor),),
+                        Text(userData.lastName, style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor),),
+                        Text(userData.grade.toString() + "th Grade", style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor),)
+                      ],
+                    ),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      child: Text(userData.firstName.toString().substring(0, 1) + userData.lastName.toString().substring(0, 1), style: TextStyle(fontSize: 60, color: Theme.of(context).accentColor),),
+                    )
+                  ],
+                ),
+                officerProfilePage(context)
+              ]
+            );
+          }
+          else {
+            return CircularProgressIndicator();
+          }
+        }
       ),
     );
   }
