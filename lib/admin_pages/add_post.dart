@@ -25,7 +25,7 @@ class AddPost extends StatelessWidget {
                 Center(
                   child: Container(
                     height: SizeConfig.blockSizeVertical * 50,
-                    width: SizeConfig.blockSizeHorizontal * 80,
+                    width: SizeConfig.blockSizeHorizontal * 90,
                     child: Card(
                       color: Theme.of(context).primaryColor,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

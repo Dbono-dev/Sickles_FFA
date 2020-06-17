@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/size_config.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FeedPage extends StatelessWidget {
 
@@ -70,7 +71,10 @@ class FeedPage extends StatelessWidget {
                 Text(snapshot.data['title'], style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),),
                 Text(snapshot.data['description'], style: TextStyle(fontSize: 27.5, color: Theme.of(context).accentColor), textAlign: TextAlign.center,),
                 Spacer(),
-                Text(snapshot.data['link'], style: TextStyle(fontSize: 30, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),)
+                GestureDetector(
+                  onTap: () => launch("http://" + snapshot.data['link']),
+                  child: Text(snapshot.data['link'], style: TextStyle(fontSize: 30, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),)
+                )
               ]
             ),
           ),
