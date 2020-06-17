@@ -91,6 +91,19 @@ class MainPageBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
 
+    String timeOfDay = "";
+    int currentTime = DateTime.now().hour;
+    
+    if(currentTime > 4 && currentTime < 12) {
+      timeOfDay = "Good Morning";
+    }
+    else if(currentTime >= 12 && currentTime < 16) {
+      timeOfDay = "Good Afternoon";
+    }
+    else {
+      timeOfDay = "Good Evening";
+    }
+
     return Container(
       color: Colors.white,
       child: StreamBuilder<UserData>(
@@ -103,7 +116,7 @@ class MainPageBody extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget> [
                 Padding(padding: EdgeInsets.all(12)),
-                Text("Good Evening", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold)),
+                Text(timeOfDay, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold)),
                 Text(userData.firstName, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold),),
                 Padding(padding: EdgeInsets.all(6)),
                 FutureBuilder(
@@ -150,7 +163,7 @@ class MainPageBody extends StatelessWidget {
   Widget eventCard(BuildContext context, DocumentSnapshot snapshot) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage(snapshot: snapshot,)));
       },
       child: Container(
         height: 400,

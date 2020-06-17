@@ -50,5 +50,16 @@ class EventService {
       'participates': participates
     });
   }
+}
 
+class PostService {
+  final CollectionReference postCollection = Firestore.instance.collection('posts');
+
+  Future addPost({String title, String description, String link}) async {
+    return await postCollection.document(title).setData({
+      'title': title,
+      'description': description,
+      'link': link
+    });
+  }
 }

@@ -1,6 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ffa_app/size_config.dart';
 import 'package:flutter/material.dart';
 
 class FeedPage extends StatelessWidget {
+
+  Future getPosts() async {
+    var firestore = Firestore.instance;
+    QuerySnapshot qn = await firestore.collection("posts").getDocuments();
+    
+    return qn.documents;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -14,56 +24,57 @@ class FeedPage extends StatelessWidget {
               padding: const EdgeInsets.all(25),
               child: Text("Feed", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 55, color: Theme.of(context).accentColor, decoration: TextDecoration.underline))
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Container(
-                width: 400,
-                height: 250,
-                child: Card(
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)
-                  ),
-                  color: Theme.of(context).primaryColor,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: Column(
-                      children: <Widget> [
-                        Padding(padding: EdgeInsets.all(3.5)),
-                        Text("Title", style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),),
-                        Text("This is where the message would go!", style: TextStyle(fontSize: 30, color: Theme.of(context).accentColor), textAlign: TextAlign.center,)
-                      ]
+            FutureBuilder(
+              future: getPosts(),
+              builder: (_, index) {
+                if(index.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                else {
+                  return Container(
+                    height: SizeConfig.blockSizeVertical * 80,
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(0),
+                      itemCount: index.data.length,
+                      itemBuilder: (_, snapshot) {
+                        return feedTile(context, index.data[snapshot]);
+                      }
                     ),
-                  ),
-                ) 
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 15, 20, 0),
-              child: Container(
-                width: 400,
-                height: 250,
-                child: Card(
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)
-                  ),
-                  color: Theme.of(context).primaryColor,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: Column(
-                      children: <Widget> [
-                        Padding(padding: EdgeInsets.all(3.5)),
-                        Text("Title", style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),),
-                        Text("This is where the message would go!", style: TextStyle(fontSize: 30, color: Theme.of(context).accentColor), textAlign: TextAlign.center,)
-                      ]
-                    ),
-                  ),
-                ) 
-              ),
+                  );
+                }
+              },
             )
           ]
         ),
+      ),
+    );
+  }
+
+  Widget feedTile(BuildContext context, DocumentSnapshot snapshot) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 15, 20, 0),
+      child: Container(
+        width: 400,
+        height: 250,
+        child: Card(
+          elevation: 10,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20)
+          ),
+          color: Theme.of(context).primaryColor,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+            child: Column(
+              children: <Widget> [
+                Padding(padding: EdgeInsets.all(3.5)),
+                Text(snapshot.data['title'], style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),),
+                Text(snapshot.data['description'], style: TextStyle(fontSize: 27.5, color: Theme.of(context).accentColor), textAlign: TextAlign.center,),
+                Spacer(),
+                Text(snapshot.data['link'], style: TextStyle(fontSize: 30, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),)
+              ]
+            ),
+          ),
+        ) 
       ),
     );
   }
