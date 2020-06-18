@@ -1,3 +1,4 @@
+import 'package:ffa_app/admin_pages/view_minutes.dart';
 import 'package:ffa_app/auth_service.dart';
 import 'package:ffa_app/database.dart';
 import 'package:flutter/material.dart';
@@ -215,6 +216,7 @@ class ProfilePage extends StatelessWidget {
                 moreActionsTiles(Icons.people, "View Attendence", context, ViewAttendence()),
                 moreActionsTiles(Icons.camera_alt, "Start Scanning", context, ScanningPage()),
                 moreActionsTiles(Icons.import_export, "Export Data", context, ExportData()),
+                moreActionsTiles(Icons.assignment, "View Minutes", context, ViewMinutes()),
                 moreActionsTiles(Icons.image, "View Images", context, ViewImages()),
                 moreActionsTiles(Icons.message, "View Messages", context, ViewMessages()),
                 moreActionsTiles(Icons.settings, "Settings", context, Settings())
