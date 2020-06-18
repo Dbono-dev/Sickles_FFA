@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ffa_app/database.dart';
 import 'package:ffa_app/main.dart';
 import 'package:ffa_app/size_config.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -30,10 +31,23 @@ class _SendImagesState extends State<SendImages> {
     });
   }
 
-  void sendImages() {
+  Future sendImages() async {
+    List theImagesUrl = new List();
     for(int i = 0; i < theImages.length; i++) {
       firebaseStorageRef = FirebaseStorage.instance.ref().child(widget.name + DateTime.now().toString());
       final StorageUploadTask task = firebaseStorageRef.putFile(theImages[i]);
+
+      if(theImages.length == 1) {
+        var test = await (await task.onComplete).ref.getDownloadURL();
+        await UploadedPictures().addPic(test.toString(), widget.name);
+      }
+      else {
+        var test = await (await task.onComplete).ref.getDownloadURL();
+        theImagesUrl.add(test.toString());
+      }
+    }
+    if(theImages.length > 1) {
+      await UploadedPictures().addPics(theImagesUrl, widget.name);
     }
   }
 
@@ -95,8 +109,8 @@ class _SendImagesState extends State<SendImages> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 elevation: 10,
                 color: Theme.of(context).primaryColor,
-                onPressed: () {
-                  sendImages();
+                onPressed: () async {
+                  await sendImages();
                   setState(() {
                     theImages.clear();
                   });

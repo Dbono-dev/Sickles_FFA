@@ -85,3 +85,23 @@ class OfficerMinutesService {
     });
   }
 }
+
+class UploadedPictures {
+  final CollectionReference uploadPics = Firestore.instance.collection('upload pics');
+
+  Future addPic(dynamic url, String name) async {
+    return await uploadPics.document(name + DateTime.now().toString()).setData({
+      'url': url,
+      'dateTime': DateTime.now(),
+      'name': name
+    });
+  }
+
+  Future addPics(List url, String name) async {
+    return await uploadPics.document(name + DateTime.now().toString()).setData({
+      'url': url,
+      'dateTime': DateTime.now(),
+      'name': name
+    });
+  }
+}

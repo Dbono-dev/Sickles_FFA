@@ -51,7 +51,7 @@ class ProfilePage extends StatelessWidget {
                     )
                   ],
                 ),
-                studentProfilePage(context, userData)
+                officerProfilePage(context)
               ]
             );
           }
