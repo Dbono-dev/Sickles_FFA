@@ -78,14 +78,21 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   }
 }
 
-class MainPageBody extends StatelessWidget {
+class MainPageBody extends StatefulWidget {
 
+  @override
+  _MainPageBodyState createState() => _MainPageBodyState();
+}
+
+class _MainPageBodyState extends State<MainPageBody> {
   Future getPosts() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore.collection("events").getDocuments();
     
     return qn.documents;
   }
+
+  int _index = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -119,36 +126,46 @@ class MainPageBody extends StatelessWidget {
                 Text(timeOfDay, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold)),
                 Text(userData.firstName, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold),),
                 Padding(padding: EdgeInsets.all(6)),
-                FutureBuilder(
-                  future: getPosts(),
-                  builder: (_, index) {
-                    if(index.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    }
-                    else {
-                      return Container(
-                        color: Colors.transparent,
-                        height: 400,
-                        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                        child: ListView.builder(
-                          itemCount: index.data.length,
-                          padding: EdgeInsets.all(0),
-                          itemBuilder: (_, i) {
-                            return eventCard(context, index.data[i], userData);
-                          },
-                        ),
-                      );
-                    }
-                  },
+                Center(
+                  child: SizedBox(
+                    height: 400,
+                    child: PageView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 2,
+                      controller: PageController(viewportFraction: 0.825),
+                      onPageChanged: (int index) => setState(() => _index = index),
+                      itemBuilder: (_, i) {
+                        return Transform.scale(
+                          scale: i == _index ? 1 : 0.9,
+                          child: FutureBuilder(
+                            future: getPosts(),
+                            builder: (_, index) {
+                              if(index.connectionState == ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: 10,
+                                  ),
+                                );
+                              }
+                              else {
+                                return SizedBox(
+                                  height: 400,
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.all(0),
+                                    itemCount: index.data.length,
+                                    itemBuilder: (_, i) {
+                                      return eventCard(context, index.data[_index], userData);
+                                    }
+                                  ),
+                                );
+                              }
+                            }
+                          )
+                        );
+                      },
+                    ),
+                  )
                 ),
-                Padding(padding: EdgeInsets.all(10)),        
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget> [
-                    Icon(Icons.arrow_back, size: 50,),
-                    Icon(Icons.arrow_forward, size: 50,),
-                  ]
-                )
               ]
             );
           }
@@ -168,6 +185,7 @@ class MainPageBody extends StatelessWidget {
     String endTime = snapshot.data['end time'].toString();
 
     int startTimeTest = int.parse(snapshot.data['start time'].toString().substring(0, 2));
+    int startTimeMinutes = int.parse(snapshot.data['start time'].toString().substring(3));
 
     if(startTimeTest >= 12) {
       startTimeTest = startTimeTest - 12;
@@ -178,7 +196,12 @@ class MainPageBody extends StatelessWidget {
       startTimeBack = " am";
     }
 
+    if(startTimeMinutes == 0) {
+      startTime = startTimeTest.toString() + ":" + "00";
+    }
+
     int endTimeTest = int.parse(snapshot.data['end time'].toString().substring(0, 2));
+    int endTimeMinutes = int.parse(snapshot.data['end time'].toString().substring(3));
 
     if(endTimeTest >= 12) {
       endTimeTest = endTimeTest - 12;
@@ -189,13 +212,17 @@ class MainPageBody extends StatelessWidget {
       endTimeBack = " am";
     }
 
+    if(endTimeMinutes == 0) {
+      endTime = endTimeTest.toString() + ":" + "00";
+    }
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage(snapshot: snapshot, userData: userData,)));
       },
       child: Container(
         height: 400,
-        width: 330,   
+        width: 450,   
         color: Colors.transparent,         
         child: Card(
           elevation: 10,
@@ -209,7 +236,7 @@ class MainPageBody extends StatelessWidget {
             child: Center(
               child: Column(
                 children: <Widget> [
-                  Text(snapshot.data['title'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, fontWeight: FontWeight.bold),),
+                  Text(snapshot.data['title'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
                   Text(snapshot.data['date'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 27.5)),
                   Text("Description", style: TextStyle(color: Colors.white, fontSize: 30, decoration: TextDecoration.underline)),
                   Text(snapshot.data['description'], style: TextStyle(color: Colors.white, fontSize: 25), textAlign: TextAlign.center,),

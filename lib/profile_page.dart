@@ -51,7 +51,7 @@ class ProfilePage extends StatelessWidget {
                     )
                   ],
                 ),
-                officerProfilePage(context)
+                studentProfilePage(context, userData)
               ]
             );
           }
@@ -93,9 +93,13 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget studentProfilePage(BuildContext context) {
+  Widget studentProfilePage(BuildContext context, UserData userData) {
 
     AuthService _auth = new AuthService();
+    List eventTitle = new List();
+    List eventDate = new List();
+    eventTitle = userData.eventTitle;
+    eventDate = userData.eventDate;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -105,48 +109,14 @@ class ProfilePage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(15, 15, 0, 0),
             child: Text("Recent", style: TextStyle(fontSize: 45, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(15, 15, 0, 0),
-            child: Container(
-              height: 65,
-              width: 375,
-              child: Card(
-                color: Theme.of(context).primaryColor,
-                elevation: 10,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(7.5, 0, 7.5, 0),
-                  child: Row(
-                    children: <Widget>[
-                      Text("Club Meeting", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30),),
-                      Spacer(),
-                      Text("7/11",style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30))
-                    ],
-                  ),
-                ),
-              )
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
-            child: Container(
-              height: 65,
-              width: 375,
-              child: Card(
-                color: Theme.of(context).primaryColor,
-                elevation: 10,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(7.5, 0, 7.5, 0),
-                  child: Row(
-                    children: <Widget>[
-                      Text("Barbeque", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30),),
-                      Spacer(),
-                      Text("10/21",style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30))
-                    ],
-                  ),
-                ),
-              )
+          SizedBox(
+            height: 150,
+            child: ListView.builder(
+              padding: EdgeInsets.all(0),
+              itemCount: eventTitle.length,
+              itemBuilder: (_, index) {
+                return studentRecentTiles(context, eventTitle[index], eventDate[index].toString().substring(0, 5));
+              }
             ),
           ),
           Padding(
@@ -172,7 +142,7 @@ class ProfilePage extends StatelessWidget {
               padding: EdgeInsets.all(0),
               children: <Widget>[
                 moreActionsTiles(Icons.message, "Send Message", context, SendMessages()),
-                moreActionsTiles(Icons.image, "Send Images", context, SendImages()),
+                moreActionsTiles(Icons.image, "Send Images", context, SendImages(name: userData.firstName + " " + userData.lastName)),
                 moreActionsTiles(Icons.settings, "Settings", context, Settings())
               ],
             ),
@@ -224,6 +194,31 @@ class ProfilePage extends StatelessWidget {
             ),
           )
       ],
+    );
+  }
+
+  Widget studentRecentTiles(BuildContext context, String title, String date) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+      child: Container(
+        height: 65,
+        width: 375,
+        child: Card(
+          color: Theme.of(context).primaryColor,
+          elevation: 10,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(7.5, 0, 7.5, 0),
+            child: Row(
+              children: <Widget>[
+                Text(title, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30),),
+                Spacer(),
+                Text(date,style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30))
+              ],
+            ),
+          ),
+        )
+      ),
     );
   }
 }

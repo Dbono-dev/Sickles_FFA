@@ -23,6 +23,7 @@ class Wrapper extends StatelessWidget {
           }
           else {
             return Material(
+              color: Colors.white,
               child: Center(
                 child: Container(
                   color: Colors.white,
