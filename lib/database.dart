@@ -74,3 +74,14 @@ class BugService {
     });
   }
 }
+
+class OfficerMinutesService {
+  final CollectionReference officerMinutes = Firestore.instance.collection('officer minutes');
+
+  Future addOfficerMinutes(String date, String url) async {
+    return await officerMinutes.document(date).setData({
+      'url': url,
+      'date': date
+    });
+  }
+}
