@@ -51,7 +51,7 @@ class ProfilePage extends StatelessWidget {
                     )
                   ],
                 ),
-                studentProfilePage(context, userData)
+                userData.permissions == 1 ? officerProfilePage(context) : studentProfilePage(context, userData)
               ]
             );
           }

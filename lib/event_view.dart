@@ -78,12 +78,12 @@ class _EventViewPageState extends State<EventViewPage> {
                       padding: const EdgeInsets.all(10.0),
                       child: Column(
                         children: <Widget> [
-                          Text(widget.snapshot.data['title'], style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),),
+                          Text(widget.snapshot.data['title'], style: TextStyle(fontSize: 32, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
                           Text(widget.snapshot.data['date'], style: TextStyle(fontSize: 27.5, color: Theme.of(context).accentColor),),
                           Padding(padding: EdgeInsets.all(2)),
                           x == 0 ? Text("Description", style: TextStyle(fontSize: 35, color: Colors.white, decoration: TextDecoration.underline),) : Container(),
                           x == 0 ? Text(widget.snapshot.data['description'], style: TextStyle(fontSize: 25, color: Colors.white), textAlign: TextAlign.center,): Container(),
-                          x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: 225,) : Container(),
+                          x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: 200,) : Container(),
                           Spacer(),
                           Text(bottomOfCard, style: TextStyle(fontSize: 30, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),)
                         ]
