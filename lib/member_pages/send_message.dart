@@ -7,6 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SendMessages extends StatefulWidget {
+
+  SendMessages({this.type});
+
+  final String type;
+
   @override
   _SendMessagesState createState() => _SendMessagesState();
 }
@@ -35,11 +40,11 @@ class _SendMessagesState extends State<SendMessages> {
           return Center(child: CircularProgressIndicator(),);
         }
         else {
-          senderName = userData.firstName + " " + userData.lastName;
-          recieverName = "Leadership";
+          widget.type == "officer" ? senderName = "Leadership" : senderName = userData.firstName + " " + userData.lastName;
+          widget.type == "officer" ? recieverName = userData.firstName + " " + userData.lastName : recieverName = "Leadership";
 
-          sender = userData.uid;
-          reciever = 'Leadership';
+          widget.type == "officer" ? sender = "Leadership" : sender = userData.uid;
+          widget.type == "officer" ? reciever = userData.uid : reciever = "Leadership";
 
           return Scaffold(
             backgroundColor: Colors.white,
@@ -143,11 +148,15 @@ class _SendMessagesState extends State<SendMessages> {
                                       color: Theme.of(context).primaryColor,
                                       elevation: 10,
                                       onPressed: () async {
-                                        if(messageController.text.length > 0) { 
-                                          await _firestore.collection('messages').document(userData.uid).setData({
+                                        if(messageController.text.length > 0) {
+                                          widget.type == "officer" ? await _firestore.collection('messages').document(userData.uid).updateData({    
+                                            'text': messageController.text,
+                                            'date': DateTime.now().toString(),
+                                          }) : await _firestore.collection('messages').document(userData.uid).updateData({
                                             'uid': userData.uid,
                                             'text': messageController.text,
-                                            'date': DateTime.now().toString()
+                                            'date': DateTime.now().toString(),
+                                            'name': userData.firstName + " " + userData.lastName
                                           });
                                           await _firestore.collection('messages').document(userData.uid).collection('theMessages').document(DateTime.now().toString()).setData({
                                             'text': messageController.text,
