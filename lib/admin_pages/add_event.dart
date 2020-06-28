@@ -273,7 +273,7 @@ class _AddEventState extends State<AddEvent> {
                             if(result == null) {
                               print("Fill in all the forms.");
                             }
-                            if(result != null) {
+                            else {
                               setState(() {
                                 _thirdformKey.currentState.reset();
                                 _title = "";

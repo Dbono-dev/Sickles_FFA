@@ -59,6 +59,21 @@ class Settings extends StatelessWidget {
             onPressed: () async {
               await AuthService().resetPassword();
               Navigator.of(context).pop();
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Change Password"),
+                    content: Text("Check your email for more instructions on your resetting password"),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () => Navigator.of(context).pop(), 
+                        child: Text("DONE")
+                      )
+                    ],
+                  );
+                }
+              );
             },
             child: Text("CONFIRM"),
           )
@@ -80,6 +95,21 @@ class Settings extends StatelessWidget {
             onPressed: () async {
               await AuthService().resetPassword();
               Navigator.of(context).pop();
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Change Password"),
+                    content: Text("Check your email for more instructions on your resetting password"),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () => Navigator.of(context).pop(), 
+                        child: Text("DONE")
+                      )
+                    ],
+                  );
+                }
+              );
             },
             child: Text("CONFIRM"),
           )

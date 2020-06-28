@@ -8,6 +8,20 @@ class DatabaseService {
 
   final CollectionReference memberCollection = Firestore.instance.collection('members');
 
+  Future updateUserData(String firstName, String lastName, String studentNum, String grade, String uid, String permissions) async {
+    return await memberCollection.document(uid).setData({
+      'first name': firstName,
+      'last name': lastName,
+      'grade': int.parse(grade),
+      'student num': int.parse(studentNum),
+      'permissions': int.parse(permissions),
+      'uid': uid,
+      'club attendence': [],
+      'event date': [],
+      'event title': [],
+    });
+  }
+
   UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
     return UserData(
       uid: snapshot.data['uid'],

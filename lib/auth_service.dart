@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ffa_app/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ffa_app/user.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -26,6 +29,26 @@ class AuthService {
     try {
       var result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
+      var a = await Firestore.instance.collection('members').document(user.uid).get();
+      if(a.exists) {
+        
+      }
+      else {
+        String firstName;
+        String lastName;
+        String studentNum;
+        String grade;
+        String permissions;
+        var firestore = FirebaseDatabase.instance.reference().child('members');
+        var result = await firestore.child(user.uid).once().then((DataSnapshot snapshot) => {
+          firstName = snapshot.value['firstName'],
+          lastName = snapshot.value['lastName'],
+          grade = snapshot.value['grade'].toString(),
+          permissions = snapshot.value['permissions'].toString(),
+          studentNum = snapshot.value['studentNum'].toString()
+        });
+        await DatabaseService(uid: user.uid).updateUserData(firstName, lastName, studentNum, grade, user.uid, permissions);
+      }
       return user;
     }
     catch (e) {

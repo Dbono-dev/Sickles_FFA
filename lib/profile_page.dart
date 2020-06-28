@@ -14,6 +14,7 @@ import 'package:ffa_app/member_pages/send_message.dart';
 import 'package:ffa_app/settings.dart';
 import 'package:ffa_app/user.dart';
 import 'package:provider/provider.dart';
+import 'package:ffa_app/styles.dart';
 
 class ProfilePage extends StatelessWidget {
 
@@ -39,15 +40,22 @@ class ProfilePage extends StatelessWidget {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        Text(userData.firstName, style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor),),
-                        Text(userData.lastName, style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor),),
-                        Text(userData.grade.toString() + "th Grade", style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor),)
+                        Text(userData.firstName, style: topOfProfilePage),
+                        Text(userData.lastName, style: topOfProfilePage),
+                        Text(userData.grade.toString() + "th Grade", style: topOfProfilePage)
                       ],
                     ),
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Theme.of(context).primaryColor,
-                      child: Text(userData.firstName.toString().substring(0, 1) + userData.lastName.toString().substring(0, 1), style: TextStyle(fontSize: 60, color: Theme.of(context).accentColor),),
+                    Card(
+                      color: Colors.transparent,
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(35)
+                      ),
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Theme.of(context).primaryColor,
+                        child: Text(userData.firstName.toString().substring(0, 1) + userData.lastName.toString().substring(0, 1), style: TextStyle(fontSize: 60, color: Theme.of(context).accentColor),),
+                      ),
                     )
                   ],
                 ),

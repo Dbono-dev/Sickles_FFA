@@ -19,7 +19,7 @@ class ViewImages extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           ReturnButton(),
-          Padding(padding: EdgeInsets.all(15)),
+          Padding(padding: EdgeInsets.all(10)),
           Center(
             child: FutureBuilder(
               future: getPosts(),
@@ -29,7 +29,7 @@ class ViewImages extends StatelessWidget {
                 }
                 else {
                   return SizedBox(
-                    height: 450,
+                    height: 560,
                     child: ListView.builder(
                       itemCount: snapshot.data.length,
                       padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -74,7 +74,19 @@ class ViewImages extends StatelessWidget {
             Spacer(),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-              child: Image.network(snapshot.data['url'], fit: BoxFit.fitHeight, height: 180,),
+              child: Image.network(
+                snapshot.data['url'],
+                fit: BoxFit.fitHeight,
+                height: 180,
+                loadingBuilder:(BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                  if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor)
+                      ),
+                    );
+                  },
+              ),
             )
           ],
         ),

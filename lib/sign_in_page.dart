@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:ffa_app/auth_service.dart';
+import 'package:ffa_app/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,6 +37,9 @@ class _MyHomePageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    SizeConfig().init(context);
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Theme.of(context).primaryColor,
@@ -223,6 +227,11 @@ class _MyHomePageState extends State<LoginPage> {
                       ),
                         ]
                       ),
+                ),
+                Spacer(),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, SizeConfig.blockSizeVertical * 1),
+                  child: Text("Developed by: Dylan Bono", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
                 )
               ],
             ),
