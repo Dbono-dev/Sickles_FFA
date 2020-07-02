@@ -51,11 +51,24 @@ class _MyHomePageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Padding(padding: EdgeInsets.all(8)),
-                Text("SICKLES", style: GoogleFonts.corben(color: Theme.of(context).accentColor, fontSize: 60, fontWeight: FontWeight.bold)),
-                Padding(padding: EdgeInsets.all(0)),
-                Text("FFA", style: GoogleFonts.corben(color: Theme.of(context).accentColor, fontSize: 60, fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: SizeConfig.blockSizeVertical * 22.5,
+                  width: SizeConfig.blockSizeHorizontal * 100,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Column(
+                      children: <Widget>[
+                        Text("SICKLES", style: GoogleFonts.corben(
+                          color: Theme.of(context).accentColor, 
+                          fontWeight: FontWeight.bold)),
+                        Padding(padding: EdgeInsets.all(0)),
+                        Text("FFA", style: GoogleFonts.corben(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                ),
                 Container(
-                  padding: EdgeInsets.only(top: 23),
+                  padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 1),
                   child: Column(
                     children: <Widget> [
                       Stack(
@@ -127,6 +140,7 @@ class _MyHomePageState extends State<LoginPage> {
                                                 title: Text("Reset Password"),
                                                 content: TextFormField(
                                                   onSaved: (value) => _email = value,
+                                                  onChanged: (value) => _email = value,
                                                   decoration: InputDecoration(hintText: "Enter email...")
                                                 ),
                                                 actions: <Widget>[
@@ -139,6 +153,7 @@ class _MyHomePageState extends State<LoginPage> {
                                                   CupertinoButton(
                                                     child: Text("CONFIRM"),
                                                     onPressed: () async {
+
                                                       await AuthService().resetPassword(theEmail: _email);
                                                     }
                                                   ),
@@ -152,6 +167,7 @@ class _MyHomePageState extends State<LoginPage> {
                                                   key: _resetPasswordFormKey,
                                                   child: TextFormField(
                                                     onSaved: (value) => _email = value,
+                                                    onChanged: (value) => _email = value,
                                                     decoration: InputDecoration(hintText: "Enter email...")
                                                   ),
                                                 ),
@@ -168,6 +184,22 @@ class _MyHomePageState extends State<LoginPage> {
                                                       final resetPassword = _resetPasswordFormKey.currentState;
                                                       resetPassword.save();
                                                       await AuthService().resetPassword(theEmail: _email);
+                                                      Navigator.of(context).pop();
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext context) {
+                                                          return AlertDialog(
+                                                            title: Text("Message"),
+                                                            content: Text("Check you email for more information on resetting your password.", textAlign: TextAlign.center,),
+                                                            actions: <Widget>[
+                                                              FlatButton(
+                                                                onPressed: () => Navigator.of(context).pop(), 
+                                                                child: Text("BACK")
+                                                              )
+                                                            ],
+                                                          );
+                                                        }
+                                                      );
                                                     }
                                                   ),
                                                 ],
@@ -231,7 +263,7 @@ class _MyHomePageState extends State<LoginPage> {
                 Spacer(),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 0, 0, SizeConfig.blockSizeVertical * 1),
-                  child: Text("Developed by: Dylan Bono", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
+                  child: Text("Developed by: Dylan Bono", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20),),
                 )
               ],
             ),

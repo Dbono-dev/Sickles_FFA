@@ -1,6 +1,7 @@
 import 'package:ffa_app/admin_pages/view_minutes.dart';
 import 'package:ffa_app/auth_service.dart';
 import 'package:ffa_app/database.dart';
+import 'package:ffa_app/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:ffa_app/admin_pages/add_event.dart';
 import 'package:ffa_app/admin_pages/add_post.dart';
@@ -73,14 +74,14 @@ class ProfilePage extends StatelessWidget {
 
   Widget moreActionsTiles(IconData icon, String title, BuildContext context, Widget location) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+      padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 3, 10, SizeConfig.blockSizeHorizontal * 3, 0),
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => location));
         },
         child: Container(
-          height: 65,
-          width: 375,
+          height: SizeConfig.blockSizeVertical * 10,
+          width: SizeConfig.blockSizeHorizontal * 80,
           child: Card(
             color: Theme.of(context).primaryColor,
             elevation: 10,
@@ -172,20 +173,40 @@ class ProfilePage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Text("More Actions", style: TextStyle(fontSize: 45, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),),
-                RaisedButton(
-                  elevation: 10,
-                  child: Text("Logout", style: TextStyle(color: Theme.of(context).accentColor),), 
-                  onPressed: () {
-                    _auth.logout();
-                  },
-                  color: Theme.of(context).primaryColor,
+                SizedBox(
+                  width: SizeConfig.safeBlockHorizontal * 65,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                      "More Actions", 
+                      style: TextStyle(
+                        fontSize: 45, 
+                        color: Theme.of(context).accentColor,
+                         decoration: TextDecoration.underline
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: SizeConfig.blockSizeHorizontal * 25,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
+                    child: RaisedButton(
+                      elevation: 10,
+                      child: Text("Logout", style: TextStyle(color: Theme.of(context).accentColor),), 
+                      onPressed: () {
+                        _auth.logout();
+                      },
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
                 )
               ],
             ),
           ),
           Container(
-            height: 402,
+            height: SizeConfig.blockSizeVertical * 53,
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[

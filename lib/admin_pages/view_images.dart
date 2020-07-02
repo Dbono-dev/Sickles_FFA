@@ -29,7 +29,7 @@ class ViewImages extends StatelessWidget {
                 }
                 else {
                   return SizedBox(
-                    height: 560,
+                    height: SizeConfig.blockSizeVertical * 80,
                     child: ListView.builder(
                       itemCount: snapshot.data.length,
                       padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -52,7 +52,7 @@ class ViewImages extends StatelessWidget {
     DateTime dateTime = snapshot.data['dateTime'].toDate();
 
     return Container(
-      height: 250,
+      height: SizeConfig.blockSizeVertical * 40,
       width: SizeConfig.blockSizeHorizontal * 85,
       child: Card(
         elevation: 10,

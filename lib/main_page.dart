@@ -47,22 +47,22 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
           ]
         ),
         bottomNavigationBar: SizedBox(
-          height: 50,
+          height: SizeConfig.blockSizeVertical * 7.5,
             child: TabBar(
               controller: _tabController,
               tabs: <Widget>[
                 Tab(
-                  icon: Icon(Icons.person, size: 27,),
+                  icon: Icon(Icons.person, size: 25,),
                   text: "Profile",
                   iconMargin: EdgeInsets.all(0),
                 ),
                 Tab(
-                  icon: Icon(Icons.home, size: 27,),
+                  icon: Icon(Icons.home, size: 25,),
                   text: "Home",
                   iconMargin: EdgeInsets.all(0),
                 ),
                 Tab(
-                  icon: Icon(Icons.dehaze, size: 27,),
+                  icon: Icon(Icons.dehaze, size: 25,),
                   text: "Feed",
                   iconMargin: EdgeInsets.all(0),
                 )
@@ -128,7 +128,7 @@ class _MainPageBodyState extends State<MainPageBody> {
                 Padding(padding: EdgeInsets.all(6)),
                 Center(
                   child: SizedBox(
-                    height: 400,
+                    height: SizeConfig.blockSizeVertical * 60,
                     child: PageView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: 2,
@@ -149,10 +149,10 @@ class _MainPageBodyState extends State<MainPageBody> {
                               }
                               else {
                                 return SizedBox(
-                                  height: 400,
+                                  height: SizeConfig.blockSizeVertical * 60,
                                   child: ListView.builder(
                                     padding: EdgeInsets.all(0),
-                                    itemCount: index.data.length,
+                                    itemCount: 1,
                                     itemBuilder: (_, i) {
                                       return eventCard(context, index.data[_index], userData);
                                     }
@@ -221,7 +221,7 @@ class _MainPageBodyState extends State<MainPageBody> {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage(snapshot: snapshot, userData: userData,)));
       },
       child: Container(
-        height: 400,
+        height: SizeConfig.blockSizeVertical * 60,
         width: 450,   
         color: Colors.transparent,         
         child: Card(
@@ -236,13 +236,33 @@ class _MainPageBodyState extends State<MainPageBody> {
             child: Center(
               child: Column(
                 children: <Widget> [
-                  Text(snapshot.data['title'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-                  Text(snapshot.data['date'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 27.5)),
-                  Text("Description", style: TextStyle(color: Colors.white, fontSize: 30, decoration: TextDecoration.underline)),
-                  Text(snapshot.data['description'], style: TextStyle(color: Colors.white, fontSize: 25), textAlign: TextAlign.center,),
+                  Text(snapshot.data['title'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                  Text(snapshot.data['date'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25)),
+                  SizedBox(
+                    height: SizeConfig.blockSizeVertical * 5,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text("Description", 
+                      style: TextStyle(
+                        color: Colors.white, 
+                        decoration: TextDecoration.underline)
+                      ),
+                    )
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(top: 2),
+                    height: SizeConfig.blockSizeVertical * 17.5,
+                    child: SingleChildScrollView(
+                      child: Text(
+                        snapshot.data['description'], 
+                        style: TextStyle(color: Colors.white, fontSize: 25), 
+                        textAlign: TextAlign.center,
+                      )
+                    )
+                  ),
                   Spacer(),
-                  Text(snapshot.data['location'], style: TextStyle(color: Colors.white, fontSize: 25)),
-                  Text(startTime + startTimeBack + " - " + endTime + endTimeBack, style: TextStyle(color: Colors.white, fontSize: 25)),
+                  Text(snapshot.data['location'], style: TextStyle(color: Colors.white, fontSize: 20)),
+                  Text(startTime + startTimeBack + " - " + endTime + endTimeBack, style: TextStyle(color: Colors.white, fontSize: 20)),
                   Text("View Event", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, decoration: TextDecoration.underline, fontWeight: FontWeight.bold))
                 ]
               ),

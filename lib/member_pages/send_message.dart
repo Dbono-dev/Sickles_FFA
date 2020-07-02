@@ -143,7 +143,7 @@ class _SendMessagesState extends State<SendMessages> {
                                     ),
                                   ),
                                   Container(
-                                    width: SizeConfig.blockSizeHorizontal * 17,
+                                    width: SizeConfig.blockSizeHorizontal * 18,
                                     child: RaisedButton(
                                       color: Theme.of(context).primaryColor,
                                       elevation: 10,

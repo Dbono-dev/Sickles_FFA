@@ -55,8 +55,8 @@ class FeedPage extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 15, 20, 0),
       child: Container(
-        width: 400,
-        height: 250,
+        width: SizeConfig.blockSizeHorizontal * 80,
+        height: SizeConfig.blockSizeVertical * 40,
         child: Card(
           elevation: 10,
           shape: RoundedRectangleBorder(
@@ -69,7 +69,7 @@ class FeedPage extends StatelessWidget {
               children: <Widget> [
                 Padding(padding: EdgeInsets.all(3.5)),
                 Text(snapshot.data['title'], style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),),
-                Text(snapshot.data['description'], style: TextStyle(fontSize: 27.5, color: Theme.of(context).accentColor), textAlign: TextAlign.center,),
+                Container(height: SizeConfig.blockSizeVertical * 20, child: SingleChildScrollView(child: Text(snapshot.data['description'], style: TextStyle(fontSize: 27.5, color: Theme.of(context).accentColor), textAlign: TextAlign.center,))),
                 Spacer(),
                 GestureDetector(
                   onTap: () => launch("http://" + snapshot.data['link']),

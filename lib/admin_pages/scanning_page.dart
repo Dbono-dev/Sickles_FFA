@@ -21,14 +21,14 @@ class _ScanningPageState extends State<ScanningPage> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      height: SizeConfig.blockSizeVertical * 76,
+      height: SizeConfig.blockSizeVertical * 72,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget> [
           ReturnButton(),
           Container(
-            height: SizeConfig.blockSizeVertical * 70,
+            height: SizeConfig.blockSizeVertical * 65,
             child: ListView.builder(
               itemCount: theScanUID.length,
               itemBuilder: (_, index) {

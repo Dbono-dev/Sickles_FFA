@@ -11,8 +11,8 @@ class EventViewPage extends StatefulWidget {
 
   EventViewPage({this.snapshot, this.userData});
 
-  DocumentSnapshot snapshot;
-  UserData userData;
+  final DocumentSnapshot snapshot;
+  final UserData userData;
 
   @override
   _EventViewPageState createState() => _EventViewPageState();
@@ -68,8 +68,8 @@ class _EventViewPageState extends State<EventViewPage> {
                   });
                 },
                 child: Container(
-                  height: 375,
-                  width: 350,
+                  height: SizeConfig.blockSizeVertical * 60,
+                  width: SizeConfig.blockSizeHorizontal * 85,
                   child: Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     color: Theme.of(context).primaryColor,
@@ -85,7 +85,20 @@ class _EventViewPageState extends State<EventViewPage> {
                           x == 0 ? Text(widget.snapshot.data['description'], style: TextStyle(fontSize: 25, color: Colors.white), textAlign: TextAlign.center,): Container(),
                           x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: 200,) : Container(),
                           Spacer(),
-                          Text(bottomOfCard, style: TextStyle(fontSize: 30, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),)
+                          SizedBox(
+                            width: SizeConfig.blockSizeHorizontal * 100,
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Text(
+                                bottomOfCard, 
+                                style: TextStyle(
+                                  fontSize: 30, 
+                                  color: Theme.of(context).accentColor, 
+                                  decoration: TextDecoration.underline
+                                ),
+                              ),
+                            ),
+                          )
                         ]
                       ),
                     )

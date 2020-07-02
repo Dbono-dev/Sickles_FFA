@@ -51,9 +51,9 @@ class _ViewMinutesState extends State<ViewMinutes> {
           Row(
             children: <Widget>[
               ReturnButton(),
-              Padding(padding: EdgeInsets.fromLTRB(150, 0, 0, 0)),
+              Spacer(),
               Container(
-                padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                padding: EdgeInsets.fromLTRB(0, 40, 10, 0),
                 child: RaisedButton(
                   onPressed: () {
                     showDialog(
