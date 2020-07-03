@@ -224,6 +224,7 @@ class _ViewAttendenceState extends State<ViewAttendence> {
                           itemCount: eventTitle.length,
                           itemBuilder: (_, index) {
                             return Card(
+                              elevation: 10,
                               child: ListTile(
                                 title: Text(eventTitle[index]),
                                 trailing: Text(snapshot.data['event date'][index]),

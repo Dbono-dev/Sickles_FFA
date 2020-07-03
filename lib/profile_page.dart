@@ -2,6 +2,7 @@ import 'package:ffa_app/admin_pages/view_minutes.dart';
 import 'package:ffa_app/auth_service.dart';
 import 'package:ffa_app/database.dart';
 import 'package:ffa_app/size_config.dart';
+import 'package:ffa_app/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:ffa_app/admin_pages/add_event.dart';
 import 'package:ffa_app/admin_pages/add_post.dart';
@@ -173,6 +174,7 @@ class ProfilePage extends StatelessWidget {
                 moreActionsTiles(Icons.message, "Send Message", context, SendMessages()),
                 moreActionsTiles(Icons.image, "Send Images", context, SendImages(name: userData.firstName + " " + userData.lastName)),
                 moreActionsTiles(Icons.settings, "Settings", context, Settings()),
+                moreActionsTiles(Icons.text_fields, "Test", context, TestingPage())
               ],
             ),
           )

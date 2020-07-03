@@ -45,7 +45,7 @@ class EventService {
   
   final CollectionReference eventsCollection = Firestore.instance.collection('events');
 
-  Future addEvent(String title, String date, String description, String location, String startTime, String endTime, String maxParticipates, String type) async {
+  Future addEvent(String title, String date, String description, String location, String startTime, String endTime, String maxParticipates, String type, bool theSwitch) async {
     return await eventsCollection.document(date + title).setData({
       'title': title,
       'date': date, 
@@ -55,7 +55,8 @@ class EventService {
       'end time': endTime,
       'max participates': maxParticipates,
       'type': type,
-      'participates': []
+      'participates': [],
+      'information dialog': theSwitch
     });
   }
 

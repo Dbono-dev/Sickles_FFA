@@ -35,6 +35,13 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
 
     SizeConfig().init(context);
 
+    Future getPosts() async {
+      var firestore = Firestore.instance;
+      QuerySnapshot qn = await firestore.collection("events").orderBy('date').getDocuments();
+      
+      return qn.documents;
+    }
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -42,7 +49,27 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
           controller: _tabController,
           children: [
             ProfilePage(),
-            MainPageBody(),
+            FutureBuilder(
+              future: getPosts(),
+              builder: (_, snapshot) {
+                if(snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: 10,
+                    ),
+                  );
+                }
+                else {
+                  return Column(
+                    children: <Widget>[
+                      MainPageBody(
+                        snapshot: snapshot,
+                      ),
+                    ],
+                  );
+                }
+              },
+            ),
             FeedPage()
           ]
         ),
@@ -79,6 +106,10 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
 }
 
 class MainPageBody extends StatefulWidget {
+
+  MainPageBody({this.snapshot});
+
+  final AsyncSnapshot<dynamic> snapshot;
 
   @override
   _MainPageBodyState createState() => _MainPageBodyState();
@@ -129,32 +160,20 @@ class _MainPageBodyState extends State<MainPageBody> {
                 Center(
                   child: SizedBox(
                     height: SizeConfig.blockSizeVertical * 60,
-                    child: PageView.builder(
+                    child: widget.snapshot.data.length == 0 ? Center(child: Text("NO EVENTS", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 35),)) : PageView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: 2,
+                      itemCount: widget.snapshot.data.length,
                       controller: PageController(viewportFraction: 0.825),
                       onPageChanged: (int theindex) => setState(() => _index = theindex),
                       itemBuilder: (_, i) {
-                        return FutureBuilder(
-                          future: getPosts(),
-                          builder: (_, index) {
-                            if(index.connectionState == ConnectionState.waiting) {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: 10,
-                                ),
-                              );
-                            }
-                            else {
-                              return Transform.scale(
-                                scale: i == _index ? 1 : 0.9,
-                                  child: SizedBox(
-                                    height: SizeConfig.blockSizeVertical * 60,
-                                    child: eventCard(context, index.data[_index], userData),
-                                  ),
-                              );
-                            }
-                          }
+                        return Container(
+                          child: Transform.scale(
+                            scale: i == _index ? 1 : 0.9,
+                              child: SizedBox(
+                                height: SizeConfig.blockSizeVertical * 60,
+                                child: eventCard(context, widget.snapshot.data[_index], userData),
+                              ),
+                          ),
                         );
                       },
                     ),
