@@ -53,73 +53,85 @@ class _SendImagesState extends State<SendImages> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          ReturnButton(),
-          Center(
-            child: Container(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              height: 450,
-              width: SizeConfig.blockSizeHorizontal * 85,
-              child: Card(
-                color: Theme.of(context).primaryColor,
-                elevation: 10,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                child: Column(
-                  children: <Widget>[
-                    Padding(padding: EdgeInsets.all(5)),
-                    FlatButton(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      color: Theme.of(context).accentColor,
-                      onPressed: () async {
-                        await getImage();
-                      },
-                      child: Text("Add Images", )
-                    ),
-                    Padding(padding: EdgeInsets.all(15)),
-                    theImages.length == 0 ? Center(child: Text("NO IMAGES", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35))) : SizedBox(
-                      height: 344,
-                      child: ListView.builder(
-                        padding: EdgeInsets.all(0),
-                        itemCount: theImages.length,
-                        itemBuilder: (_, i) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
-                            child: Image.file(theImages[i], height: 150,),
-                          );
-                        }
+    return Scaffold(
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            ReturnButton(),
+            Center(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                height: SizeConfig.blockSizeVertical * 70,
+                width: SizeConfig.blockSizeHorizontal * 85,
+                child: Card(
+                  color: Theme.of(context).primaryColor,
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  child: Column(
+                    children: <Widget>[
+                      Padding(padding: EdgeInsets.all(5)),
+                      FlatButton(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        color: Theme.of(context).accentColor,
+                        onPressed: () async {
+                          await getImage();
+                        },
+                        child: Text("Add Images", )
                       ),
-                    )
-                  ],
+                      Padding(padding: EdgeInsets.all(15)),
+                      theImages.length == 0 ? Center(child: Text("NO IMAGES", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35))) : SizedBox(
+                        height: SizeConfig.blockSizeVertical * 52,
+                        child: ListView.builder(
+                          padding: EdgeInsets.all(0),
+                          itemCount: theImages.length,
+                          itemBuilder: (_, i) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                              child: Image.file(theImages[i], height: 150,),
+                            );
+                          }
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(padding: EdgeInsets.all(5)),
-          Center(
-            child: Container(
-              height: SizeConfig.blockSizeVertical * 7,
-              width: SizeConfig.blockSizeHorizontal * 45,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Theme.of(context).primaryColor),
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                elevation: 10,
-                color: Theme.of(context).primaryColor,
-                onPressed: () async {
-                  await sendImages();
-                  setState(() {
-                    theImages.clear();
-                  });
-                },
-                child: Text("Send Images", style: TextStyle(color: Theme.of(context).accentColor),)
+            Padding(padding: EdgeInsets.all(5)),
+            Center(
+              child: Container(
+                height: SizeConfig.blockSizeVertical * 7,
+                width: SizeConfig.blockSizeHorizontal * 45,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Theme.of(context).primaryColor),
+                child: Builder(
+                  builder: (context) {
+                    return RaisedButton(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      elevation: 10,
+                      color: Theme.of(context).primaryColor,
+                      onPressed: () async {
+                        Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Sending Image...", style: TextStyle(color: Theme.of(context).primaryColor),),
+                            backgroundColor: Theme.of(context).accentColor,
+                            duration: Duration(seconds: 3),
+                        ));
+                        await sendImages();
+                        setState(() {
+                          theImages.clear();
+                        });
+                      },
+                      child: Text("Send Images", style: TextStyle(color: Theme.of(context).accentColor),)
+                    );
+                  }
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

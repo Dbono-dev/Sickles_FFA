@@ -46,7 +46,7 @@ class EventService {
   final CollectionReference eventsCollection = Firestore.instance.collection('events');
 
   Future addEvent(String title, String date, String description, String location, String startTime, String endTime, String maxParticipates, String type) async {
-    return await eventsCollection.document(title + date).setData({
+    return await eventsCollection.document(date + title).setData({
       'title': title,
       'date': date, 
       'description': description,
@@ -60,7 +60,7 @@ class EventService {
   }
 
   Future addParticipates(List participates, String title, String date) async {
-    return await eventsCollection.document(title + date).updateData({
+    return await eventsCollection.document(date + title).updateData({
       'participates': participates
     });
   }
@@ -70,10 +70,17 @@ class PostService {
   final CollectionReference postCollection = Firestore.instance.collection('posts');
 
   Future addPost({String title, String description, String link}) async {
-    return await postCollection.document(title).setData({
+    return await postCollection.document(DateTime.now().toString() + title).setData({
       'title': title,
       'description': description,
       'link': link
+    });
+  }
+
+  Future addPostWithoutLink({String title, String description}) async {
+    return await postCollection.document(DateTime.now().toString() + title).setData({
+      'title': title,
+      'description': description,
     });
   }
 }

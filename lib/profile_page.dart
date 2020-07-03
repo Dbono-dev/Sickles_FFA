@@ -60,7 +60,7 @@ class ProfilePage extends StatelessWidget {
                     )
                   ],
                 ),
-                userData.permissions == 1 ? officerProfilePage(context) : studentProfilePage(context, userData)
+                userData.permissions == 1 || userData.permissions == 2 ? officerProfilePage(context) : studentProfilePage(context, userData)
               ]
             );
           }
@@ -114,13 +114,13 @@ class ProfilePage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget> [
-        Padding(
+        userData.permissions == 3 ? Container() : Padding(
             padding: const EdgeInsets.fromLTRB(15, 15, 0, 0),
             child: Text("Recent", style: TextStyle(fontSize: 45, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),),
           ),
-          SizedBox(
-            height: 150,
-            child: ListView.builder(
+          userData.permissions == 3 ? Container() : SizedBox(
+            height: SizeConfig.blockSizeVertical * 15,
+            child: eventTitle.length == 0 ? Center(child: Text("No Recent Events", style: TextStyle(fontSize: 25, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),)) : ListView.builder(
               padding: EdgeInsets.all(0),
               itemCount: eventTitle.length,
               itemBuilder: (_, index) {
@@ -131,22 +131,42 @@ class ProfilePage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 15, 0, 0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Text("More Actions", style: TextStyle(fontSize: 45, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),),
-                RaisedButton(
-                  elevation: 10,
-                  child: Text("Logout", style: TextStyle(color: Theme.of(context).accentColor),), 
-                  onPressed: () {
-                    _auth.logout();
-                  },
-                  color: Theme.of(context).primaryColor,
+                SizedBox(
+                  width: SizeConfig.safeBlockHorizontal * 65,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                      "More Actions", 
+                      style: TextStyle(
+                        fontSize: 45, 
+                        color: Theme.of(context).accentColor,
+                         decoration: TextDecoration.underline
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: SizeConfig.blockSizeHorizontal * 25,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
+                    child: RaisedButton(
+                      elevation: 10,
+                      child: Text("Logout", style: TextStyle(color: Theme.of(context).accentColor),), 
+                      onPressed: () {
+                        _auth.logout();
+                      },
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
                 )
               ],
             ),
           ),
           Container(
-            height: 179,
+            height: userData.permissions == 3 ? SizeConfig.blockSizeVertical * 53 : SizeConfig.blockSizeVertical * 27,
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[

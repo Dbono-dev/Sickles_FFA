@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class ViewImages extends StatelessWidget {
   Future getPosts() async {
     var firestore = Firestore.instance;
-    QuerySnapshot qn = await firestore.collection("upload pics").getDocuments();
+    QuerySnapshot qn = await firestore.collection("upload pics").orderBy('dateTime', descending: true).getDocuments();
     return qn.documents;
   }
 

@@ -176,7 +176,7 @@ class _ViewMinutesState extends State<ViewMinutes> {
       builder: (context, setState) {
         return Container(
           height: SizeConfig.blockSizeVertical * 30,
-          width: SizeConfig.blockSizeHorizontal * 80,
+          width: SizeConfig.blockSizeHorizontal * 85,
           child: Card(
             color: Theme.of(context).primaryColor,
             elevation: 10,

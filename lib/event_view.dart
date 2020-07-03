@@ -27,6 +27,10 @@ class _EventViewPageState extends State<EventViewPage> {
   Widget build(BuildContext context) {
     var user = Provider.of<User>(context);
 
+    if(widget.userData.permissions >= 1 || !widget.userData.eventTitle.contains(widget.snapshot.data['title'])) {
+      bottomOfCard = "";
+    }
+
     if(widget.snapshot.data['participates'].contains(user.uid)) {
       show = false;
     }
@@ -53,16 +57,19 @@ class _EventViewPageState extends State<EventViewPage> {
           children: <Widget> [
             ReturnButton(),
             Padding(
-              padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
+              padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
               child: GestureDetector(
                 onTap: () {
                   setState(() {
-                    if(x == 0) {
+                    if(widget.userData.permissions >= 1 || !widget.userData.eventTitle.contains(widget.snapshot.data['title'])) {
+                      bottomOfCard = "";
+                    }
+                    else if(x == 0) {
                       x = 1;
                       bottomOfCard = "Tap to show details";
                     }
                     else {
-                      x =0;
+                      x = 0;
                       bottomOfCard = "Tap to show QR Code";
                     }
                   });
@@ -85,7 +92,7 @@ class _EventViewPageState extends State<EventViewPage> {
                           x == 0 ? Text(widget.snapshot.data['description'], style: TextStyle(fontSize: 25, color: Colors.white), textAlign: TextAlign.center,): Container(),
                           x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: 200,) : Container(),
                           Spacer(),
-                          SizedBox(
+                          widget.userData.permissions >= 1 || !widget.userData.eventTitle.contains(widget.snapshot.data['title']) ? Container() : SizedBox(
                             width: SizeConfig.blockSizeHorizontal * 100,
                             child: FittedBox(
                               fit: BoxFit.contain,
@@ -106,7 +113,7 @@ class _EventViewPageState extends State<EventViewPage> {
                 ),
               ),
             ),
-            show == false ? Container() : Builder(
+            show == false || widget.userData.permissions == 2 || widget.userData.permissions == 1 || widget.userData.permissions == 3 ? Container() : Builder(
               builder: (context) {
                 return Padding(
                   padding: EdgeInsets.fromLTRB(0, 25, 0, 0),

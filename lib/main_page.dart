@@ -87,7 +87,7 @@ class MainPageBody extends StatefulWidget {
 class _MainPageBodyState extends State<MainPageBody> {
   Future getPosts() async {
     var firestore = Firestore.instance;
-    QuerySnapshot qn = await firestore.collection("events").getDocuments();
+    QuerySnapshot qn = await firestore.collection("events").orderBy('date').getDocuments();
     
     return qn.documents;
   }
@@ -133,34 +133,28 @@ class _MainPageBodyState extends State<MainPageBody> {
                       scrollDirection: Axis.horizontal,
                       itemCount: 2,
                       controller: PageController(viewportFraction: 0.825),
-                      onPageChanged: (int index) => setState(() => _index = index),
+                      onPageChanged: (int theindex) => setState(() => _index = theindex),
                       itemBuilder: (_, i) {
-                        return Transform.scale(
-                          scale: i == _index ? 1 : 0.9,
-                          child: FutureBuilder(
-                            future: getPosts(),
-                            builder: (_, index) {
-                              if(index.connectionState == ConnectionState.waiting) {
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: 10,
-                                  ),
-                                );
-                              }
-                              else {
-                                return SizedBox(
-                                  height: SizeConfig.blockSizeVertical * 60,
-                                  child: ListView.builder(
-                                    padding: EdgeInsets.all(0),
-                                    itemCount: 1,
-                                    itemBuilder: (_, i) {
-                                      return eventCard(context, index.data[_index], userData);
-                                    }
-                                  ),
-                                );
-                              }
+                        return FutureBuilder(
+                          future: getPosts(),
+                          builder: (_, index) {
+                            if(index.connectionState == ConnectionState.waiting) {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: 10,
+                                ),
+                              );
                             }
-                          )
+                            else {
+                              return Transform.scale(
+                                scale: i == _index ? 1 : 0.9,
+                                  child: SizedBox(
+                                    height: SizeConfig.blockSizeVertical * 60,
+                                    child: eventCard(context, index.data[_index], userData),
+                                  ),
+                              );
+                            }
+                          }
                         );
                       },
                     ),
@@ -222,7 +216,7 @@ class _MainPageBodyState extends State<MainPageBody> {
       },
       child: Container(
         height: SizeConfig.blockSizeVertical * 60,
-        width: 450,   
+        width: SizeConfig.blockSizeHorizontal * 75,   
         color: Colors.transparent,         
         child: Card(
           elevation: 10,

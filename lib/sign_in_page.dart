@@ -108,7 +108,7 @@ class _MyHomePageState extends State<LoginPage> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.only(top: 20, bottom: 5, left: 25, right: 25),
+                                      padding: EdgeInsets.only(top: 10, bottom: 5, left: 25, right: 25),
                                       child: TextFormField(
                                         onSaved: (value) => _signInPassword = value,
                                         focusNode: myFocusNodePasswordLogin,
@@ -153,8 +153,45 @@ class _MyHomePageState extends State<LoginPage> {
                                                   CupertinoButton(
                                                     child: Text("CONFIRM"),
                                                     onPressed: () async {
-
-                                                      await AuthService().resetPassword(theEmail: _email);
+                                                      final resetPassword = _resetPasswordFormKey.currentState;
+                                                      resetPassword.save();
+                                                      try {
+                                                        await AuthService().resetPassword(theEmail: _email);
+                                                        Navigator.of(context).pop();
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext context) {
+                                                            return CupertinoAlertDialog(
+                                                              title: Text("Message"),
+                                                              content: Text("Check you email for more information on resetting your password.", textAlign: TextAlign.center,),
+                                                              actions: <Widget>[
+                                                                CupertinoButton(
+                                                                  onPressed: () => Navigator.of(context).pop(), 
+                                                                  child: Text("BACK")
+                                                                )
+                                                              ],
+                                                            );
+                                                          }
+                                                        );
+                                                      }
+                                                      catch (e) {
+                                                        Navigator.of(context).pop();
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext context) {
+                                                            return CupertinoAlertDialog(
+                                                              title: Text("Error Message"),
+                                                              content: Text("The email you entered is not a valid account!", textAlign: TextAlign.center,),
+                                                              actions: <Widget>[
+                                                                CupertinoButton(
+                                                                  onPressed: () => Navigator.of(context).pop(), 
+                                                                  child: Text("BACK")
+                                                                )
+                                                              ],
+                                                            );
+                                                          }
+                                                        );
+                                                      }
                                                     }
                                                   ),
                                                 ],
@@ -183,23 +220,43 @@ class _MyHomePageState extends State<LoginPage> {
                                                     onPressed: () async {
                                                       final resetPassword = _resetPasswordFormKey.currentState;
                                                       resetPassword.save();
-                                                      await AuthService().resetPassword(theEmail: _email);
-                                                      Navigator.of(context).pop();
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (BuildContext context) {
-                                                          return AlertDialog(
-                                                            title: Text("Message"),
-                                                            content: Text("Check you email for more information on resetting your password.", textAlign: TextAlign.center,),
-                                                            actions: <Widget>[
-                                                              FlatButton(
-                                                                onPressed: () => Navigator.of(context).pop(), 
-                                                                child: Text("BACK")
-                                                              )
-                                                            ],
-                                                          );
-                                                        }
-                                                      );
+                                                      try {
+                                                        await AuthService().resetPassword(theEmail: _email);
+                                                        Navigator.of(context).pop();
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext context) {
+                                                            return AlertDialog(
+                                                              title: Text("Message"),
+                                                              content: Text("Check you email for more information on resetting your password.", textAlign: TextAlign.center,),
+                                                              actions: <Widget>[
+                                                                FlatButton(
+                                                                  onPressed: () => Navigator.of(context).pop(), 
+                                                                  child: Text("BACK")
+                                                                )
+                                                              ],
+                                                            );
+                                                          }
+                                                        );
+                                                      }
+                                                      catch (e) {
+                                                        Navigator.of(context).pop();
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext context) {
+                                                            return AlertDialog(
+                                                              title: Text("Error Message"),
+                                                              content: Text("The email you entered is not a valid account!", textAlign: TextAlign.center,),
+                                                              actions: <Widget>[
+                                                                FlatButton(
+                                                                  onPressed: () => Navigator.of(context).pop(), 
+                                                                  child: Text("BACK")
+                                                                )
+                                                              ],
+                                                            );
+                                                          }
+                                                        );
+                                                      }
                                                     }
                                                   ),
                                                 ],
@@ -238,7 +295,7 @@ class _MyHomePageState extends State<LoginPage> {
                                   ),
                                 ),
                                 onPressed: () async {
-                                  showInSnackBar("Logining In");
+                                  showInSnackBar("Logining In...");
                                   final signInForm = _signInFormKey.currentState;
                                   signInForm.save();
                                   if(signInForm.validate()) {
@@ -291,11 +348,11 @@ class _MyHomePageState extends State<LoginPage> {
         value,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: Colors.white,
+          color: Theme.of(context).primaryColor,
           fontSize: 16
         ),
       ),
-      backgroundColor: Colors.grey,
+      backgroundColor: Theme.of(context).accentColor,
       duration: Duration(seconds: 1),
     ));
   }

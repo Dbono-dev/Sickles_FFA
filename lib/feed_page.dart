@@ -22,7 +22,7 @@ class FeedPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget> [
             Padding(
-              padding: const EdgeInsets.all(25),
+              padding: const EdgeInsets.fromLTRB(25, 25, 25, 0),
               child: Text("Feed", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 55, color: Theme.of(context).accentColor, decoration: TextDecoration.underline))
             ),
             FutureBuilder(
@@ -33,8 +33,10 @@ class FeedPage extends StatelessWidget {
                 }
                 else {
                   return Container(
-                    height: SizeConfig.blockSizeVertical * 80,
-                    child: ListView.builder(
+                    height: SizeConfig.blockSizeVertical * 75,
+                    child: index.data.length == 0 ? Center(
+                      child: Text("NO POSTS", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, fontWeight: FontWeight.bold),),
+                      ) : ListView.builder(
                       padding: EdgeInsets.all(0),
                       itemCount: index.data.length,
                       itemBuilder: (_, snapshot) {
@@ -69,7 +71,15 @@ class FeedPage extends StatelessWidget {
               children: <Widget> [
                 Padding(padding: EdgeInsets.all(3.5)),
                 Text(snapshot.data['title'], style: TextStyle(fontSize: 35, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),),
-                Container(height: SizeConfig.blockSizeVertical * 20, child: SingleChildScrollView(child: Text(snapshot.data['description'], style: TextStyle(fontSize: 27.5, color: Theme.of(context).accentColor), textAlign: TextAlign.center,))),
+                Container(
+                  height: SizeConfig.blockSizeVertical * 23, 
+                  child: SingleChildScrollView(
+                    child: Text(snapshot.data['description'], 
+                    style: TextStyle(fontSize: 25, color: Theme.of(context).accentColor),
+                    textAlign: TextAlign.center,
+                    )
+                  )
+                ),
                 Spacer(),
                 GestureDetector(
                   onTap: () => launch("http://" + snapshot.data['link']),
