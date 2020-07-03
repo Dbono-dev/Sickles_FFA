@@ -172,7 +172,7 @@ class ProfilePage extends StatelessWidget {
               children: <Widget>[
                 moreActionsTiles(Icons.message, "Send Message", context, SendMessages()),
                 moreActionsTiles(Icons.image, "Send Images", context, SendImages(name: userData.firstName + " " + userData.lastName)),
-                moreActionsTiles(Icons.settings, "Settings", context, Settings())
+                moreActionsTiles(Icons.settings, "Settings", context, Settings()),
               ],
             ),
           )
