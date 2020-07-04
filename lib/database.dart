@@ -60,9 +60,18 @@ class EventService {
     });
   }
 
-  Future addParticipates(List participates, String title, String date) async {
+  Future addParticipateswithInfo(List participates, String title, String date, List participatesInfo, List participatesName) async {
     return await eventsCollection.document(date + title).updateData({
-      'participates': participates
+      'participates': participates,
+      'participates info': participatesInfo,
+      'participates name': participatesName
+    });
+  }
+
+  Future addParticipates(List participates, String title, String date, List participatesName) async {
+    return await eventsCollection.document(date + title).updateData({
+      'participates': participates,
+      'participates name': participatesName
     });
   }
 }

@@ -8,11 +8,13 @@ import 'package:provider/provider.dart';
 
 class SendMessages extends StatefulWidget {
 
-  SendMessages({this.type});
+  SendMessages({this.type, this.receiverName, this.uid});
 
   final String type;
+  final String receiverName;
+  final String uid;
 
-  @override
+  @override 
   _SendMessagesState createState() => _SendMessagesState();
 }
 
@@ -41,10 +43,10 @@ class _SendMessagesState extends State<SendMessages> {
         }
         else {
           widget.type == "officer" ? senderName = "Leadership" : senderName = userData.firstName + " " + userData.lastName;
-          widget.type == "officer" ? recieverName = userData.firstName + " " + userData.lastName : recieverName = "Leadership";
+          widget.type == "officer" ? recieverName = widget.receiverName : recieverName = "Leadership";
 
           widget.type == "officer" ? sender = "Leadership" : sender = userData.uid;
-          widget.type == "officer" ? reciever = userData.uid : reciever = "Leadership";
+          widget.type == "officer" ? reciever = widget.uid : reciever = "Leadership";
 
           return Scaffold(
             backgroundColor: Colors.white,
@@ -84,7 +86,7 @@ class _SendMessagesState extends State<SendMessages> {
                           padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
                           height: SizeConfig.blockSizeVertical * 75,
                           child: StreamBuilder<QuerySnapshot> (
-                            stream: _firestore.collection('messages').document(userData.uid).collection('theMessages').snapshots(),
+                            stream: _firestore.collection('messages').document(widget.uid).collection('theMessages').snapshots(),
                             builder: (context, snapshot) {
                               if(!snapshot.hasData) {
                                 return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.grey),),);
@@ -149,20 +151,36 @@ class _SendMessagesState extends State<SendMessages> {
                                       elevation: 10,
                                       onPressed: () async {
                                         if(messageController.text.length > 0) {
-                                          widget.type == "officer" ? await _firestore.collection('messages').document(userData.uid).updateData({    
-                                            'text': messageController.text,
-                                            'date': DateTime.now().toString(),
-                                          }) : await _firestore.collection('messages').document(userData.uid).updateData({
-                                            'uid': userData.uid,
-                                            'text': messageController.text,
-                                            'date': DateTime.now().toString(),
-                                            'name': userData.firstName + " " + userData.lastName
-                                          });
-                                          await _firestore.collection('messages').document(userData.uid).collection('theMessages').document(DateTime.now().toString()).setData({
+                                          try {
+                                            widget.type == "officer" ? await _firestore.collection('messages').document(widget.uid).updateData({    
+                                              'text': messageController.text,
+                                              'date': DateTime.now().toString(),
+                                            }) : await _firestore.collection('messages').document(userData.uid).updateData({
+                                              'uid': userData.uid,
+                                              'text': messageController.text,
+                                              'date': DateTime.now().toString(),
+                                              'name': userData.firstName + " " + userData.lastName
+                                            });
+                                          }
+                                          catch (e) {
+                                            widget.type == "officer" ? await _firestore.collection('messages').document(widget.uid).setData({    
+                                              'text': messageController.text,
+                                              'date': DateTime.now().toString(),
+                                            }) : await _firestore.collection('messages').document(userData.uid).setData({
+                                              'uid': userData.uid,
+                                              'text': messageController.text,
+                                              'date': DateTime.now().toString(),
+                                              'name': userData.firstName + " " + userData.lastName
+                                            });
+                                          }
+                                          widget.type == "officer" ? await _firestore.collection('messages').document(widget.uid).collection('theMessages').document(DateTime.now().toString()).setData({
                                             'text': messageController.text,
                                             'from': sender,
                                             'dateTime': DateTime.now()
-                                          });
+                                          }) : await _firestore.collection('messages').document(userData.uid).collection('theMessages').document(DateTime.now().toString()).setData({
+                                            'text': messageController.text,
+                                            'from': sender,
+                                            'dateTime': DateTime.now()});
                                           messageController.clear();
                                           scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
                                         }

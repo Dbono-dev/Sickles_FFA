@@ -41,7 +41,8 @@ class ViewMessages extends StatelessWidget {
                     String receiverName = index.data[i].data['name'];
                     String description = index.data[i].data['text'];
                     String date = index.data[i].data['date'];
-                    theMessagesWidget.add(_conversationPreviews(context, receiverName, description, date));
+                    String uid = index.data[i].data['uid'];
+                    theMessagesWidget.add(_conversationPreviews(context, receiverName, description, date, uid));
                   }
                   if(theMessagesWidget.length > 0) {
                     return ListView.builder(
@@ -67,17 +68,17 @@ class ViewMessages extends StatelessWidget {
     );
   }
 
-  Widget _conversationPreviews(BuildContext context, String receiverName, String description, String date) {
+  Widget _conversationPreviews(BuildContext context, String receiverName, String description, String date, String uid) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SendMessages(type: "officer",)));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SendMessages(type: "officer", receiverName: receiverName, uid: uid)));
       },
       child: Card(
         elevation: 10,
         margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Center(
-          child: ListTile(
+          child: ListTile( 
             leading: Text(receiverName, style: TextStyle(fontWeight: FontWeight.bold),),
             title: Text(description, overflow: TextOverflow.ellipsis,),
             trailing: Text(date.substring(0, 10), style: TextStyle(fontWeight: FontWeight.bold),),

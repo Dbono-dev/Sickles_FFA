@@ -171,7 +171,7 @@ class ProfilePage extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[
-                moreActionsTiles(Icons.message, "Send Message", context, SendMessages()),
+                moreActionsTiles(Icons.message, "Send Message", context, SendMessages(type: "student", uid: userData.uid,)),
                 moreActionsTiles(Icons.image, "Send Images", context, SendImages(name: userData.firstName + " " + userData.lastName)),
                 moreActionsTiles(Icons.settings, "Settings", context, Settings()),
                 moreActionsTiles(Icons.text_fields, "Test", context, TestingPage())

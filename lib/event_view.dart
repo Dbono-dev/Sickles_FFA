@@ -53,7 +53,7 @@ class _EventViewPageState extends State<EventViewPage> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          height: SizeConfig.blockSizeVertical * 100,
+          height: widget.userData.permissions == 1 || widget.userData.permissions == 2 ? SizeConfig.blockSizeVertical * 140 : SizeConfig.blockSizeVertical * 100,
           color: Colors.white,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -68,7 +68,7 @@ class _EventViewPageState extends State<EventViewPage> {
                       if(widget.userData.permissions >= 1 || !widget.snapshot.data['participates'].contains(widget.userData.uid)) {
                         bottomOfCard = "";
                       }
-                      else if(x == 0) {
+                      else if(x == 0) { 
                         x = 1;
                         bottomOfCard = "Tap to show details";
                       }
@@ -117,6 +117,7 @@ class _EventViewPageState extends State<EventViewPage> {
                   ),
                 ),
               ),
+              widget.userData.permissions == 1 || widget.userData.permissions == 2 ? viewParticipates(widget.snapshot.data['participates name'], widget.snapshot.data['participates info'], widget.snapshot.data['information dialog']) : Container(),
               show == false || widget.userData.permissions == 2 || widget.userData.permissions == 1 || widget.userData.permissions == 3 ? Container() : Builder(
                 builder: (context) {
                   return Padding(
@@ -166,9 +167,15 @@ class _EventViewPageState extends State<EventViewPage> {
                                       FlatButton(
                                         onPressed: () async {
                                           List participates = new List();
+                                          List participatesInfo = new List();
+                                          List participatesName = new List();
                                           participates = widget.snapshot.data['participates'];
+                                          participatesInfo = widget.snapshot.data['participates info'];
+                                          participatesName = widget.snapshot.data['participates name'];
                                           participates.add(user.uid);
-                                          await EventService().addParticipates(participates, widget.snapshot.data['title'], widget.snapshot.data['date']);
+                                          participatesInfo.add(_info);
+                                          participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
+                                          await EventService().addParticipateswithInfo(participates, widget.snapshot.data['title'], widget.snapshot.data['date'], participatesInfo, participatesName);
                                           Navigator.of(context).pop();
                                           super.setState(() {
                                             show = false;
@@ -183,9 +190,12 @@ class _EventViewPageState extends State<EventViewPage> {
                             }
                             else {
                               List participates = new List();
+                              List participatesName = new List();
                               participates = widget.snapshot.data['participates'];
+                              participatesName = widget.snapshot.data['participates name'];
                               participates.add(user.uid);
-                              await EventService().addParticipates(participates, widget.snapshot.data['title'], widget.snapshot.data['date']);
+                              participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
+                              await EventService().addParticipates(participates, widget.snapshot.data['title'], widget.snapshot.data['date'], participatesName);
                               Scaffold.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text("Signed Up", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
@@ -218,6 +228,42 @@ class _EventViewPageState extends State<EventViewPage> {
             ]
           ),
         ),
+      ),
+    );
+  }
+
+  Widget viewParticipates(List participates, List participatesInfo, bool informationDialog) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Padding(padding: EdgeInsets.fromLTRB(0, SizeConfig.blockSizeVertical * 2, 0, 0)),
+          Text("Participates", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30, fontWeight: FontWeight.bold, ),),
+          Container(
+            height: SizeConfig.blockSizeVertical * 40,
+            child: ListView.builder(
+              padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 5, 0, SizeConfig.blockSizeHorizontal * 5, 0),
+              itemCount: participates.length,
+              itemBuilder: (_, i) {
+                return Card(
+                  color: Theme.of(context).primaryColor,
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  child: ListTile(
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(participates[i], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20)),
+                        informationDialog == true ? Text(participatesInfo[i], style: TextStyle(color: Theme.of(context).accentColor)) : Container()
+                      ],
+                    ),
+                    leading: Text((i + 1).toString() + ".", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
+                  ),
+                );
+              }
+            ),
+          )
+        ],
       ),
     );
   }
