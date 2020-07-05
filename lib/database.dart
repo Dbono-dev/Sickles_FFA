@@ -137,3 +137,24 @@ class UploadedPictures {
     });
   }
 }
+
+class DatabaseImporantDates {
+  final CollectionReference importantDates = Firestore.instance.collection('club dates');
+
+  Future setImportantDates(String type, String date, var participates) async {
+    return await importantDates.document(type + date).setData({
+      'type': type,
+      'date': date,
+      'participates': participates
+    });
+  }
+
+  Future updateImportantDates(String type, String newDate, String oldDate, var participates) async {
+    await importantDates.document(type + oldDate).delete();
+    return setImportantDates(type, newDate, participates);
+  }
+
+  Future deleteImportantDates(String type, String date) async {
+    return await importantDates.document(type + date).delete();
+  }
+}

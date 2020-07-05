@@ -3,6 +3,9 @@ import 'package:ffa_app/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ffa_app/user.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:io' show Platform;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -25,7 +28,7 @@ class AuthService {
     }
   }
 
-  Future loginUser({String email, String password}) async{
+  Future loginUser({String email, String password, BuildContext context}) async{
     try {
       var result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
@@ -52,8 +55,44 @@ class AuthService {
       return user;
     }
     catch (e) {
-      print(e.toString());
-      return null;
+      return ErrorMessage(e.message.toString(), context);
+    }
+  }
+
+  Future<void> ErrorMessage(String body, BuildContext context) async {
+    if(Platform.isAndroid) {
+      return showDialog<void>(
+          context: context,
+          barrierDismissible: false, // user must tap button!
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Error Message"),
+              content: Text(body),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+    }
+    else {
+      return CupertinoAlertDialog(
+        title: Text("Error Message"),
+        content: Text(body),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("Ok")
+          )
+        ],
+      );
     }
   }
 
@@ -76,7 +115,5 @@ class AuthService {
 
   Future createUser({String email, String password}) async {
     var r = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-
-    //await DatabaseService(uid: r.user.uid).updateUserData();
   }
 }

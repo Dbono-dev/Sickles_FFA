@@ -1,3 +1,4 @@
+import 'package:ffa_app/admin_pages/set_important_dates.dart';
 import 'package:ffa_app/admin_pages/view_minutes.dart';
 import 'package:ffa_app/auth_service.dart';
 import 'package:ffa_app/database.dart';
@@ -240,6 +241,7 @@ class ProfilePage extends StatelessWidget {
                 moreActionsTiles(Icons.assignment, "View Minutes", context, ViewMinutes()),
                 moreActionsTiles(Icons.image, "View Images", context, ViewImages()),
                 moreActionsTiles(Icons.message, "View Messages", context, ViewMessages()),
+                moreActionsTiles(Icons.calendar_today, "Set Club Dates", context, ImportantDates()),
                 moreActionsTiles(Icons.settings, "Settings", context, Settings())
               ],
             ),

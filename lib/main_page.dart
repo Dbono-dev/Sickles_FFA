@@ -6,6 +6,7 @@ import 'package:ffa_app/feed_page.dart';
 import 'package:ffa_app/profile_page.dart';
 import 'package:ffa_app/event_view.dart';
 import 'package:ffa_app/user.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
@@ -38,8 +39,8 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     Future getPosts() async {
       var firestore = Firestore.instance;
       QuerySnapshot qn = await firestore.collection("events").orderBy('date').getDocuments();
-      
-      return qn.documents;
+      QuerySnapshot secondQn = await firestore.collection('club dates').orderBy('date').getDocuments();
+      return secondQn.documents + qn.documents;
     }
 
     return DefaultTabController(
@@ -116,12 +117,6 @@ class MainPageBody extends StatefulWidget {
 }
 
 class _MainPageBodyState extends State<MainPageBody> {
-  Future getPosts() async {
-    var firestore = Firestore.instance;
-    QuerySnapshot qn = await firestore.collection("events").orderBy('date').getDocuments();
-    
-    return qn.documents;
-  }
 
   int _index = 0;
 
@@ -142,6 +137,16 @@ class _MainPageBodyState extends State<MainPageBody> {
       timeOfDay = "Good Evening";
     }
 
+    DateFormat format = new DateFormat("MM-dd-yyyy");
+
+    var theSnapshot = widget.snapshot.data;
+    for(int i = 0; i < theSnapshot.length; i++) {
+      DocumentSnapshot snapshot = theSnapshot[i];
+      if(format.parse(snapshot.data['date']).isBefore(DateTime.now())) {
+        theSnapshot.remove(theSnapshot[i]);
+      }
+    }
+
     return Container(
       color: Colors.white,
       child: StreamBuilder<UserData>(
@@ -160,9 +165,9 @@ class _MainPageBodyState extends State<MainPageBody> {
                 Center(
                   child: SizedBox(
                     height: SizeConfig.blockSizeVertical * 60,
-                    child: widget.snapshot.data.length == 0 ? Center(child: Text("NO EVENTS", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 35),)) : PageView.builder(
+                    child: theSnapshot.length == 0 ? Center(child: Text("NO EVENTS", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 35),)) : PageView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: widget.snapshot.data.length,
+                      itemCount: theSnapshot.length,
                       controller: PageController(viewportFraction: 0.825),
                       onPageChanged: (int theindex) => setState(() => _index = theindex),
                       itemBuilder: (_, i) {
@@ -171,7 +176,7 @@ class _MainPageBodyState extends State<MainPageBody> {
                             scale: i == _index ? 1 : 0.9,
                               child: SizedBox(
                                 height: SizeConfig.blockSizeVertical * 60,
-                                child: eventCard(context, widget.snapshot.data[_index], userData),
+                                child: eventCard(context, theSnapshot[_index], userData),
                               ),
                           ),
                         );
@@ -191,42 +196,61 @@ class _MainPageBodyState extends State<MainPageBody> {
   }
 
   Widget eventCard(BuildContext context, DocumentSnapshot snapshot, UserData userData) {
-
     String startTimeBack;
     String endTimeBack;
-    String startTime = snapshot.data['start time'].toString();
-    String endTime = snapshot.data['end time'].toString();
+    String startTime;
+    String endTime;
+    String title;
+    String description;
+    String location;
 
-    int startTimeTest = int.parse(snapshot.data['start time'].toString().substring(0, 2));
-    int startTimeMinutes = int.parse(snapshot.data['start time'].toString().substring(3));
+    if(snapshot.data['type'] != "clubDates") {
+      startTime = snapshot.data['start time'].toString();
+      endTime = snapshot.data['end time'].toString();
 
-    if(startTimeTest >= 12) {
-      startTimeTest = startTimeTest - 12;
-      startTimeBack = " pm";
-      startTime = startTimeTest.toString() + startTime.substring(2);
+      int startTimeTest = int.parse(snapshot.data['start time'].toString().substring(0, 2));
+      int startTimeMinutes = int.parse(snapshot.data['start time'].toString().substring(3));
+
+      if(startTimeTest >= 12) {
+        startTimeTest = startTimeTest - 12;
+        startTimeBack = " pm";
+        startTime = startTimeTest.toString() + startTime.substring(2);
+      }
+      else {
+        startTimeBack = " am";
+      }
+
+      if(startTimeMinutes == 0) {
+        startTime = startTimeTest.toString() + ":" + "00";
+      }
+
+      int endTimeTest = int.parse(snapshot.data['end time'].toString().substring(0, 2));
+      int endTimeMinutes = int.parse(snapshot.data['end time'].toString().substring(3));
+
+      if(endTimeTest >= 12) {
+        endTimeTest = endTimeTest - 12;
+        endTimeBack = " pm";
+        endTime = endTimeTest.toString() + endTime.substring(2);
+      }
+      else {
+        endTimeBack = " am";
+      }
+
+      if(endTimeMinutes == 0) {
+        endTime = endTimeTest.toString() + ":" + "00";
+      }
+      title = snapshot.data['title'];
+      description = snapshot.data['description'];
+      location = snapshot.data['location'];
     }
     else {
-      startTimeBack = " am";
-    }
-
-    if(startTimeMinutes == 0) {
-      startTime = startTimeTest.toString() + ":" + "00";
-    }
-
-    int endTimeTest = int.parse(snapshot.data['end time'].toString().substring(0, 2));
-    int endTimeMinutes = int.parse(snapshot.data['end time'].toString().substring(3));
-
-    if(endTimeTest >= 12) {
-      endTimeTest = endTimeTest - 12;
-      endTimeBack = " pm";
-      endTime = endTimeTest.toString() + endTime.substring(2);
-    }
-    else {
-      endTimeBack = " am";
-    }
-
-    if(endTimeMinutes == 0) {
-      endTime = endTimeTest.toString() + ":" + "00";
+      title = "Club Meeting";
+      description = "";
+      location = "Sickles High";
+      startTime = "10:56";
+      startTimeBack = "am";
+      endTime = "11:31";
+      endTimeBack = "am";
     }
 
     return GestureDetector(
@@ -249,13 +273,13 @@ class _MainPageBodyState extends State<MainPageBody> {
             child: Center(
               child: Column(
                 children: <Widget> [
-                  Text(snapshot.data['title'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                  Text(title, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
                   Text(snapshot.data['date'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25)),
                   SizedBox(
                     height: SizeConfig.blockSizeVertical * 5,
                     child: FittedBox(
                       fit: BoxFit.contain,
-                      child: Text("Description", 
+                      child: Text(snapshot.data['type'] == "clubDates" ? "Agenda" : "Description", 
                       style: TextStyle(
                         color: Colors.white, 
                         decoration: TextDecoration.underline)
@@ -267,14 +291,14 @@ class _MainPageBodyState extends State<MainPageBody> {
                     height: SizeConfig.blockSizeVertical * 17.5,
                     child: SingleChildScrollView(
                       child: Text(
-                        snapshot.data['description'], 
+                        description, 
                         style: TextStyle(color: Colors.white, fontSize: 25), 
                         textAlign: TextAlign.center,
                       )
                     )
                   ),
                   Spacer(),
-                  Text(snapshot.data['location'], style: TextStyle(color: Colors.white, fontSize: 20)),
+                  Text(location, style: TextStyle(color: Colors.white, fontSize: 20)),
                   Text(startTime + startTimeBack + " - " + endTime + endTimeBack, style: TextStyle(color: Colors.white, fontSize: 20)),
                   Text("View Event", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, decoration: TextDecoration.underline, fontWeight: FontWeight.bold))
                 ]

@@ -27,16 +27,28 @@ class _EventViewPageState extends State<EventViewPage> {
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<User>(context);
+    String theQrContent;
+    String title;
+    String description;
 
-    if(widget.snapshot.data['participates'].length == int.parse(widget.snapshot.data['max participates'])) {
-      signUp = "EVENT FULL";
+    if(widget.snapshot.data['type'] != "clubDates") {
+      if(widget.snapshot.data['participates'].length == int.parse(widget.snapshot.data['max participates'])) {
+        signUp = "EVENT FULL";
+      }
+
+      if(widget.snapshot.data['participates'].contains(user.uid)) {
+        signUp = "SIGNED UP";
+      }
+      theQrContent = widget.snapshot.data['title'] + "/" + widget.userData.uid + "/" + widget.userData.firstName + " " + widget.userData.lastName;
+      title = widget.snapshot.data['title'];
+      description = widget.snapshot.data['description'];
+    }
+    else {
+      theQrContent = widget.snapshot.data['date'] + "/" + widget.userData.uid + "/" + widget.userData.firstName + " " + widget.userData.lastName;
+      title = "Club Meeting";
+      description = "";
     }
 
-    if(widget.snapshot.data['participates'].contains(user.uid)) {
-      show = false;
-    }
-
-    String theQrContent = widget.snapshot.data['title'] + "/" + widget.userData.uid + "/" + widget.userData.firstName + " " + widget.userData.lastName;
     String qrContent = "";
     String _info;
 
@@ -65,16 +77,28 @@ class _EventViewPageState extends State<EventViewPage> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      if(widget.userData.permissions != 2 || !widget.snapshot.data['participates'].contains(widget.userData.uid)) {
-                        bottomOfCard = "";
-                      }
-                      else if(x == 0) { 
-                        x = 1;
-                        bottomOfCard = "Tap to show details";
+                      if(widget.snapshot.data['type'] == "clubDates") {
+                        if(x == 0) { 
+                          x = 1;
+                          bottomOfCard = "Tap to show details";
+                        }
+                        else {
+                          x = 0;
+                          bottomOfCard = "Tap to show QR Code";
+                        }
                       }
                       else {
-                        x = 0;
-                        bottomOfCard = "Tap to show QR Code";
+                        if(widget.userData.permissions >= 1 || !widget.snapshot.data['participates'].contains(widget.userData.uid)) {
+                          bottomOfCard = "";
+                        }
+                        else if(x == 0) { 
+                          x = 1;
+                          bottomOfCard = "Tap to show details";
+                        }
+                        else {
+                          x = 0;
+                          bottomOfCard = "Tap to show QR Code";
+                        }
                       }
                     });
                   },
@@ -89,21 +113,21 @@ class _EventViewPageState extends State<EventViewPage> {
                         padding: const EdgeInsets.all(10.0),
                         child: Column(
                           children: <Widget> [
-                            Text(widget.snapshot.data['title'], style: TextStyle(fontSize: 32, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                            Text(title, style: TextStyle(fontSize: 32, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
                             Text(widget.snapshot.data['date'], style: TextStyle(fontSize: 25, color: Theme.of(context).accentColor),),
                             Padding(padding: EdgeInsets.all(2)),
-                            x == 0 ? Text("Description", style: TextStyle(fontSize: 35, color: Colors.white, decoration: TextDecoration.underline),) : Container(),
+                            x == 0 ? Text(widget.snapshot.data['type'] == "clubDates" ? "Agenda" : "Description", style: TextStyle(fontSize: 35, color: Colors.white, decoration: TextDecoration.underline),) : Container(),
                             x == 0 ? SizedBox(
                               height: SizeConfig.blockSizeVertical * 20,
                               child: SingleChildScrollView(
                                 child: Text(
-                                  widget.snapshot.data['description'], 
+                                  description, 
                                   style: TextStyle(fontSize: 25, color: Colors.white), 
                                   textAlign: TextAlign.center,),
                               )) : Container(),
-                            x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: SizeConfig.blockSizeVertical * 30,) : Container(),
+                            x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: SizeConfig.blockSizeVertical * 35,) : Container(),
                             Spacer(),
-                            widget.userData.permissions != 2 || !widget.snapshot.data['participates'].contains(widget.userData.uid) ? Container() : SizedBox(
+                            widget.userData.permissions > 1 || !widget.snapshot.data['participates'].contains(widget.userData.uid) ? Container() : SizedBox(
                               width: SizeConfig.blockSizeHorizontal * 100,
                               child: FittedBox(
                                 fit: BoxFit.contain,
@@ -116,7 +140,21 @@ class _EventViewPageState extends State<EventViewPage> {
                                   ),
                                 ),
                               ),
-                            )
+                            ),
+                            widget.snapshot.data['type'] == 'clubDates' && widget.userData.permissions < 1 ? SizedBox(
+                              width: SizeConfig.blockSizeHorizontal * 100,
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: Text(
+                                  bottomOfCard, 
+                                  style: TextStyle(
+                                    fontSize: 30, 
+                                    color: Theme.of(context).accentColor, 
+                                    decoration: TextDecoration.underline
+                                  ),
+                                ),
+                              ),
+                            ) : Container()
                           ]
                         ),
                       )
@@ -124,8 +162,8 @@ class _EventViewPageState extends State<EventViewPage> {
                   ),
                 ),
               ),
-              widget.userData.permissions == 1 || widget.userData.permissions == 2 ? viewParticipates(widget.snapshot.data['participates name'], widget.snapshot.data['participates info'], widget.snapshot.data['information dialog']) : Container(),
-              show == false || widget.userData.permissions == 2 || widget.userData.permissions == 1 || widget.userData.permissions == 3 ? Container() : Builder(
+              (widget.userData.permissions == 1 || widget.userData.permissions == 2) && widget.snapshot.data['type'] != "clubDates" ? viewParticipates(widget.snapshot.data['participates name'], widget.snapshot.data['participates info'], widget.snapshot.data['information dialog']) : Container(),
+              show == false || widget.userData.permissions >= 1 || widget.snapshot.data['type'] == "clubDates" ? Container() : Builder(
                 builder: (context) {
                   return Padding(
                     padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
@@ -134,6 +172,9 @@ class _EventViewPageState extends State<EventViewPage> {
                         onTap: () async {
                           if(signUp == "EVENT FULL") {
                             
+                          }
+                          else if(signUp == "SIGNED UP") {
+
                           }
                           else {
                             if(widget.snapshot.data['information dialog'] == true) {

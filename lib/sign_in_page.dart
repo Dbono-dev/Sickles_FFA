@@ -304,7 +304,8 @@ class _MyHomePageState extends State<LoginPage> {
                                       try {
                                         dynamic result = await _auth.loginUser(
                                           email: _signInEmail,
-                                          password: _signInPassword
+                                          password: _signInPassword,
+                                          context: context
                                         );
                                       }
                                       catch (e) {

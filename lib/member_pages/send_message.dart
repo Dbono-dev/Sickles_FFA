@@ -214,7 +214,7 @@ class Message extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.fromLTRB(me ? SizeConfig.blockSizeHorizontal * 20 : 8, 8, me ? 8 : SizeConfig.blockSizeHorizontal * 20, 8),
       child: Container(
         child: Column(
           crossAxisAlignment: me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
