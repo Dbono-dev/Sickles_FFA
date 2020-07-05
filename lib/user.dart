@@ -10,7 +10,7 @@ class UserData {
   final List eventTitle;
   final String firstName;
   final String lastName;
-  final int grade;
+  final String grade;
   final List clubAttendence;
   final int permissions;
   final int studentNum;

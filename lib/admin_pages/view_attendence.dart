@@ -34,7 +34,7 @@ class _ViewAttendenceState extends State<ViewAttendence> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget> [
           ReturnButton(),
-          Padding(padding: EdgeInsets.all(15)),
+          Padding(padding: EdgeInsets.all(10)),
           Material(
             color: Colors.transparent,
             child: Container(
@@ -55,7 +55,7 @@ class _ViewAttendenceState extends State<ViewAttendence> {
               ),
             ),
           ),
-          Padding(padding: EdgeInsets.all(10)),
+          Padding(padding: EdgeInsets.all(5)),
           Container(
             color: Colors.transparent,
             child: Card(
@@ -182,6 +182,9 @@ class _ViewAttendenceState extends State<ViewAttendence> {
                             return Container();
                           }
                         }
+                        else if(int.tryParse(index.data[snapshot].data['grade']) == null || index.data[snapshot].data['permissions'] == 1) {
+                          return Container();
+                        }
                         else {
                           return studentTiles(index.data[snapshot], context);
                         }
@@ -248,9 +251,10 @@ class _ViewAttendenceState extends State<ViewAttendence> {
         );
       },
       child: Container(
-        height: 65,
+        height: SizeConfig.blockSizeVertical * 11,
         width: SizeConfig.blockSizeHorizontal * 80,
         child: Card(
+          color: Theme.of(context).primaryColor,
           elevation: 10,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: ListTile(
@@ -258,11 +262,11 @@ class _ViewAttendenceState extends State<ViewAttendence> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(snapshot.data['first name'] + " " + snapshot.data['last name']),
-                Text("Grade: " + snapshot.data['grade'].toString())
+                Text(snapshot.data['first name'] + " " + snapshot.data['last name'], style: TextStyle(color: Theme.of(context).accentColor),),
+                Text("Grade: " + snapshot.data['grade'].toString(), style: TextStyle(color: Theme.of(context).accentColor),)
               ],
             ),
-            trailing: Icon(Icons.arrow_forward, size: 40, color: Colors.black,),
+            trailing: Icon(Icons.arrow_forward, size: 40, color: Theme.of(context).accentColor,),
           )
         ),
       ),

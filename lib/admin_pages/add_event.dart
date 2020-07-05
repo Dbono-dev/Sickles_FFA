@@ -106,7 +106,7 @@ class _AddEventState extends State<AddEvent> {
                           border: OutlineInputBorder()
                         ),
                         minLines: 3,
-                        maxLines: 6,
+                        maxLines: 4,
                         onChanged: (val) => _description = (val),
                         validator: (val) => val.isEmpty ? 'Enter Description' : null,
                         initialValue: _description,

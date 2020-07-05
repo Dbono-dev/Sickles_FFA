@@ -12,7 +12,7 @@ class DatabaseService {
     return await memberCollection.document(uid).setData({
       'first name': firstName,
       'last name': lastName,
-      'grade': int.parse(grade),
+      'grade': grade,
       'student num': int.parse(studentNum),
       'permissions': int.parse(permissions),
       'uid': uid,
@@ -56,6 +56,7 @@ class EventService {
       'max participates': maxParticipates,
       'type': type,
       'participates': [],
+      'participates name': [],
       'information dialog': theSwitch
     });
   }

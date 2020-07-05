@@ -65,7 +65,7 @@ class _EventViewPageState extends State<EventViewPage> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      if(widget.userData.permissions >= 1 || !widget.snapshot.data['participates'].contains(widget.userData.uid)) {
+                      if(widget.userData.permissions != 2 || !widget.snapshot.data['participates'].contains(widget.userData.uid)) {
                         bottomOfCard = "";
                       }
                       else if(x == 0) { 
@@ -90,13 +90,20 @@ class _EventViewPageState extends State<EventViewPage> {
                         child: Column(
                           children: <Widget> [
                             Text(widget.snapshot.data['title'], style: TextStyle(fontSize: 32, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-                            Text(widget.snapshot.data['date'], style: TextStyle(fontSize: 27.5, color: Theme.of(context).accentColor),),
+                            Text(widget.snapshot.data['date'], style: TextStyle(fontSize: 25, color: Theme.of(context).accentColor),),
                             Padding(padding: EdgeInsets.all(2)),
                             x == 0 ? Text("Description", style: TextStyle(fontSize: 35, color: Colors.white, decoration: TextDecoration.underline),) : Container(),
-                            x == 0 ? Text(widget.snapshot.data['description'], style: TextStyle(fontSize: 25, color: Colors.white), textAlign: TextAlign.center,): Container(),
+                            x == 0 ? SizedBox(
+                              height: SizeConfig.blockSizeVertical * 20,
+                              child: SingleChildScrollView(
+                                child: Text(
+                                  widget.snapshot.data['description'], 
+                                  style: TextStyle(fontSize: 25, color: Colors.white), 
+                                  textAlign: TextAlign.center,),
+                              )) : Container(),
                             x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: SizeConfig.blockSizeVertical * 30,) : Container(),
                             Spacer(),
-                            widget.userData.permissions >= 1 || !widget.snapshot.data['participates'].contains(widget.userData.uid) ? Container() : SizedBox(
+                            widget.userData.permissions != 2 || !widget.snapshot.data['participates'].contains(widget.userData.uid) ? Container() : SizedBox(
                               width: SizeConfig.blockSizeHorizontal * 100,
                               child: FittedBox(
                                 fit: BoxFit.contain,

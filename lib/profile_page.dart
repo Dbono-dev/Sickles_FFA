@@ -44,7 +44,7 @@ class ProfilePage extends StatelessWidget {
                       children: <Widget>[
                         Text(userData.firstName, style: topOfProfilePage),
                         Text(userData.lastName, style: topOfProfilePage),
-                        Text(userData.grade.toString() + "th Grade", style: topOfProfilePage)
+                        int.tryParse(userData.grade) == null ? Text(userData.grade, style: topOfProfilePage) : Text(userData.grade.toString() + "th Grade", style: topOfProfilePage)
                       ],
                     ),
                     Card(
