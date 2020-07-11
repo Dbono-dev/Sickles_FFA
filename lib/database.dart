@@ -22,6 +22,13 @@ class DatabaseService {
     });
   }
 
+  Future addCompletedEvent(List eventTitle, List eventDate) async {
+    return await memberCollection.document(uid).updateData({
+      'event date': eventDate,
+      'event title': eventTitle
+    });
+  }
+
   UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
     return UserData(
       uid: snapshot.data['uid'],

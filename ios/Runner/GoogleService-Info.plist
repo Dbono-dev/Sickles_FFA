@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>845999342416-qkps1u3te0fafc0bv5722gcb74cbdo4o.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.845999342416-qkps1u3te0fafc0bv5722gcb74cbdo4o</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA8A6uAFCm_I9zLXpChfXymW8bXXTw5tEQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>845999342416</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.sicklesFFA.sicklesFFA</string>
+	<key>PROJECT_ID</key>
+	<string>ffa-app-40a3a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>ffa-app-40a3a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:845999342416:ios:11a52c2042714087496255</string>
+	<key>DATABASE_URL</key>
+	<string>https://ffa-app-40a3a.firebaseio.com</string>
+</dict>
+</plist>

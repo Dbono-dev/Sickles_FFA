@@ -3,7 +3,6 @@ import 'package:ffa_app/admin_pages/view_minutes.dart';
 import 'package:ffa_app/auth_service.dart';
 import 'package:ffa_app/database.dart';
 import 'package:ffa_app/size_config.dart';
-import 'package:ffa_app/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:ffa_app/admin_pages/add_event.dart';
 import 'package:ffa_app/admin_pages/add_post.dart';
@@ -62,7 +61,7 @@ class ProfilePage extends StatelessWidget {
                     )
                   ],
                 ),
-                userData.permissions == 1 || userData.permissions == 2 ? officerProfilePage(context) : studentProfilePage(context, userData)
+                userData.permissions == 1 || userData.permissions == 2 ? officerProfilePage(context, userData) : studentProfilePage(context, userData)
               ]
             );
           }
@@ -126,7 +125,7 @@ class ProfilePage extends StatelessWidget {
               padding: EdgeInsets.all(0),
               itemCount: eventTitle.length,
               itemBuilder: (_, index) {
-                return studentRecentTiles(context, eventTitle[index], eventDate[index].toString().substring(0, 5));
+                return studentRecentTiles(context, eventTitle[index], eventDate[index].toString().substring(0, 7));
               }
             ),
           ),
@@ -175,7 +174,6 @@ class ProfilePage extends StatelessWidget {
                 moreActionsTiles(Icons.message, "Send Message", context, SendMessages(type: "student", uid: userData.uid,)),
                 moreActionsTiles(Icons.image, "Send Images", context, SendImages(name: userData.firstName + " " + userData.lastName)),
                 moreActionsTiles(Icons.settings, "Settings", context, Settings()),
-                moreActionsTiles(Icons.text_fields, "Test", context, TestingPage())
               ],
             ),
           )
@@ -183,7 +181,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget officerProfilePage(BuildContext context) {
+  Widget officerProfilePage(BuildContext context, UserData userData) {
 
     AuthService _auth = new AuthService();
 
@@ -229,12 +227,12 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           Container(
-            height: SizeConfig.blockSizeVertical * 53,
+            height: SizeConfig.blockSizeVertical * 57,
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[
-                moreActionsTiles(Icons.event, "Add Event", context, AddEvent()),
-                moreActionsTiles(Icons.message, "Add Post", context, AddPost()),
+                userData.permissions == 2 ? moreActionsTiles(Icons.event, "Add Event", context, AddEvent()) : Container(),
+                userData.permissions == 2 ? moreActionsTiles(Icons.message, "Add Post", context, AddPost()) : Container(),
                 moreActionsTiles(Icons.people, "View Attendence", context, ViewAttendence()),
                 moreActionsTiles(Icons.camera_alt, "Start Scanning", context, ScanningPage()),
                 moreActionsTiles(Icons.import_export, "Export Data", context, ExportData()),

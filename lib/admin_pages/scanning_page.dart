@@ -16,6 +16,7 @@ class _ScanningPageState extends State<ScanningPage> {
   List theScanUID = new List();
   List theScanName = new List();
   List theScanDate = new List();
+  List theScanEvent = new List();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class _ScanningPageState extends State<ScanningPage> {
                   elevation: 10,
                   child: ListTile(
                     title: Text(theScanName[index]),
-                    trailing: Text(theScanDate[index]),
+                    trailing: Icon(Icons.check, color: Colors.green),
                   )
                 );
               }
@@ -90,10 +91,12 @@ class _ScanningPageState extends State<ScanningPage> {
                 var result = await BarcodeScanner.scan();
                 HapticFeedback.vibrate();
                 List theListOfData = await ScannedData(text: result.rawContent, date: DateTime.now().month.toString() + "/" + DateTime.now().day.toString() + "/" + DateTime.now().year.toString()).resisterScanData();
+                print(theListOfData);
                 setState(() {
-                  theScanUID.add(theListOfData[4]);
-                  theScanName.add(theListOfData[1]); 
-                  theScanDate.add(theListOfData[6]); 
+                  theScanUID.add(theListOfData[1]);
+                  theScanName.add(theListOfData[2]);
+                  theScanDate.add(theListOfData[3]);
+                  theScanEvent.add(theListOfData[0]);
                 });
               },
             child: Text("Scan", textAlign: TextAlign.center,
