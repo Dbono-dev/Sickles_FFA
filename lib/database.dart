@@ -19,6 +19,7 @@ class DatabaseService {
       'club attendence': [],
       'event date': [],
       'event title': [],
+
     });
   }
 
@@ -64,6 +65,7 @@ class EventService {
       'type': type,
       'participates': [],
       'participates name': [],
+      'participates info': [],
       'information dialog': theSwitch
     });
   }
