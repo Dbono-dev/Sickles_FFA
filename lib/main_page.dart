@@ -298,7 +298,7 @@ class _MainPageBodyState extends State<MainPageBody> {
                     )
                   ),
                   Spacer(),
-                  Text(location, style: TextStyle(color: Colors.white, fontSize: 20)),
+                  Text(location, style: TextStyle(color: Colors.white, fontSize: 20), textAlign: TextAlign.center,),
                   Text(startTime + startTimeBack + " - " + endTime + endTimeBack, style: TextStyle(color: Colors.white, fontSize: 20)),
                   Text("View Event", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, decoration: TextDecoration.underline, fontWeight: FontWeight.bold))
                 ]

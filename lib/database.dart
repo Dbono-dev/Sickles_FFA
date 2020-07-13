@@ -19,7 +19,6 @@ class DatabaseService {
       'club attendence': [],
       'event date': [],
       'event title': [],
-
     });
   }
 
