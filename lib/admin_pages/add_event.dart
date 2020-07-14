@@ -145,7 +145,7 @@ class _AddEventState extends State<AddEvent> {
                     onPressed: () {
                       showModalBottomSheet(
                         context: context,
-                        builder: (BuildContext builder) {
+                        builder: (context) {
                           return Container(
                               height: MediaQuery.of(context).copyWith().size.height / 3,
                               child: CupertinoDatePicker(
@@ -176,7 +176,7 @@ class _AddEventState extends State<AddEvent> {
                         onPressed: () {
                           showModalBottomSheet(
                             context: context,
-                            builder: (BuildContext builder) {
+                            builder: (context) {
                               return Container(
                                   height: MediaQuery.of(context).copyWith().size.height / 3,
                                   child: CupertinoDatePicker(

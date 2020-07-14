@@ -92,7 +92,8 @@ class PostService {
     return await postCollection.document(DateTime.now().toString() + title).setData({
       'title': title,
       'description': description,
-      'link': link
+      'link': link,
+      'dateTime': DateTime.now().toString()
     });
   }
 
@@ -100,6 +101,7 @@ class PostService {
     return await postCollection.document(DateTime.now().toString() + title).setData({
       'title': title,
       'description': description,
+      'dateTime': DateTime.now().toString()
     });
   }
 }

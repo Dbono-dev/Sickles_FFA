@@ -21,6 +21,7 @@ class _ViewMinutesState extends State<ViewMinutes> {
   StorageReference firebaseStorageRef;
   File theFile;
   String theFilePath = "";
+  String theFileType = "";
 
   Future<File> getImage() async {
     theFile = await FilePicker.getFile();
@@ -97,6 +98,7 @@ class _ViewMinutesState extends State<ViewMinutes> {
                                         File theFile = await getImage();
                                         setState(() {
                                           theFilePath = theFile.path;
+                                          theFileType = theFile.path.toString().substring(theFile.path.toString().length - 3);
                                         });
                                       },
                                     ),
@@ -113,18 +115,39 @@ class _ViewMinutesState extends State<ViewMinutes> {
                             ),
                             FlatButton(
                               onPressed: () async {
-                                firebaseStorageRef = FirebaseStorage.instance.ref().child(startingDate + '.pdf');
-                                final StorageUploadTask task = firebaseStorageRef.putFile(theFile);
+                                if(theFileType == "pdf" && _newDateTime != null) {
+                                  Navigator.of(context).pop();
+                                  firebaseStorageRef = FirebaseStorage.instance.ref().child(startingDate + '.pdf');
+                                  final StorageUploadTask task = firebaseStorageRef.putFile(theFile);
 
+                                  var url = await (await task.onComplete).ref.getDownloadURL();
 
-                                var url = await firebaseStorageRef.getDownloadURL();
+                                  await OfficerMinutesService().addOfficerMinutes(startingDate, url.toString());
 
-                                await OfficerMinutesService().addOfficerMinutes(startingDate, url.toString());
-
-                                startingDate = "";
-                                theFilePath = "";
-                                _newDateTime = null;
-                                Navigator.of(context).pop();
+                                  setState(() {
+                                    startingDate = "";
+                                    theFilePath = "";
+                                    _newDateTime = null;
+                                  });
+                                }
+                                else {
+                                  Navigator.of(context).pop();
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text("Error"),
+                                        content: Text("Please make sure that you have a time and that your document is a pdf file"),
+                                        actions: [
+                                          FlatButton(
+                                            onPressed: () => Navigator.of(context).pop(), 
+                                            child: Text("BACK")
+                                          )
+                                        ],
+                                      );
+                                    }
+                                  );
+                                }
                               },
                               child: Text("SUBMIT")
                             )
@@ -177,32 +200,32 @@ class _ViewMinutesState extends State<ViewMinutes> {
         return Container(
           height: SizeConfig.blockSizeVertical * 30,
           width: SizeConfig.blockSizeHorizontal * 85,
-          child: Card(
-            color: Theme.of(context).primaryColor,
-            elevation: 10,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
-              child: Column(
-                children: <Widget>[
-                  Text("Officer Meeting Minutes - " + snapshot.data['date'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25), textAlign: TextAlign.center,),
-                  Spacer(),
-                  GestureDetector(
-                    onTap: () async {
-                      await LaunchFile.loadFromFirebase(context, snapshot.data['date']).then((url) => LaunchFile.createFileFromPdfUrl(url, snapshot.data['date']).then((f) => setState(() {
-                        if(f is File) {
-                          pathPDF = f.path;
-                        } else if(url is Uri) {
-                          pdfUrl = url.toString();
-                        }
-                      })));
-                      setState(() {
-                        LaunchFile.launchPDF(context, "Officer Meeting Minutes -" + snapshot.data['date'], pathPDF, pdfUrl);
-                      });
-                    },
-                    child: Text("Open Meeting Minutes", style: TextStyle(fontSize: 20, decoration: TextDecoration.underline, color: Theme.of(context).accentColor))
-                  )
-                ],
+          child: GestureDetector(
+            onTap: () async {
+              await LaunchFile.loadFromFirebase(context, snapshot.data['date']).then((url) => LaunchFile.createFileFromPdfUrl(url, snapshot.data['date']).then((f) => setState(() {
+                if(f is File) {
+                  pathPDF = f.path;
+                } else if(url is Uri) {
+                  pdfUrl = url.toString();
+                }
+              })));
+              setState(() {
+                LaunchFile.launchPDF(context, "Officer Meeting Minutes -" + snapshot.data['date'], pathPDF, pdfUrl);
+              });
+            },
+            child: Card(
+              color: Theme.of(context).primaryColor,
+              elevation: 10,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
+                child: Column(
+                  children: <Widget>[
+                    Text("Officer Meeting Minutes - " + snapshot.data['date'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25), textAlign: TextAlign.center,),
+                    Spacer(),
+                    Text("Open Meeting Minutes", style: TextStyle(fontSize: 20, decoration: TextDecoration.underline, color: Theme.of(context).accentColor))
+                  ],
+                ),
               ),
             ),
           ),

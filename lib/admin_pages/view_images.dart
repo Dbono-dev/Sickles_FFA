@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/main.dart';
 import 'package:ffa_app/size_config.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:http/http.dart' show get;
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ViewImages extends StatelessWidget {
   Future getPosts() async {
@@ -74,18 +78,56 @@ class ViewImages extends StatelessWidget {
             Spacer(),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-              child: Image.network(
-                snapshot.data['url'],
-                fit: BoxFit.fitHeight,
-                height: 180,
-                loadingBuilder:(BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-                  if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor)
-                      ),
-                    );
-                  },
+              child: GestureDetector(
+                onLongPress: () {
+                  showDialog(
+                    barrierDismissible: true,
+                    context: context,
+                    builder: (context) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: IconButton(
+                              padding: EdgeInsets.only(bottom: 10),
+                              icon: Icon(Icons.save_alt, color: Colors.white, size: 45,),
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                                var response = await get(snapshot.data['url']);
+                                var documentDirectory = await getApplicationDocumentsDirectory();
+
+                                File file = new File(
+                                  join(documentDirectory.path, snapshot.data['name'] + dateTime.month.toString() + "-" + dateTime.day.toString() + "-" + dateTime.year.toString() + '.png')
+                                );
+
+                                file.writeAsBytesSync(response.bodyBytes);
+                              },
+                            ),
+                          ),
+                          Image.network(
+                            snapshot.data['url'],
+                            height: SizeConfig.blockSizeVertical * 80,
+                            width: SizeConfig.blockSizeHorizontal * 80,
+                          ),
+                        ],
+                      );
+                    }
+                  );
+                },
+                child: Image.network(
+                  snapshot.data['url'],
+                  fit: BoxFit.fitHeight,
+                  height: 180,
+                  loadingBuilder:(BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                    if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor)
+                        ),
+                      );
+                    },
+                ),
               ),
             )
           ],

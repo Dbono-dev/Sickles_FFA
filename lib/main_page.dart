@@ -8,6 +8,7 @@ import 'package:ffa_app/event_view.dart';
 import 'package:ffa_app/user.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:jiffy/jiffy.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key key}) : super(key: key);
@@ -55,9 +56,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
               builder: (_, snapshot) {
                 if(snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
-                    child: CircularProgressIndicator(
-                      value: 10,
-                    ),
+                    child: CircularProgressIndicator(),
                   );
                 }
                 else {
@@ -119,6 +118,19 @@ class MainPageBody extends StatefulWidget {
 class _MainPageBodyState extends State<MainPageBody> {
 
   int _index = 0;
+  DateFormat format = new DateFormat("MM-dd-yyyy");
+
+  bool _clubDateNotWithin10Days(DocumentSnapshot snapshot) {
+    DateTime theDateTime = format.parse(snapshot.data['date']);
+    int _clubDate = Jiffy(theDateTime).dayOfYear;
+    int _todayDate = Jiffy(DateTime.now()).dayOfYear;
+    if((_clubDate - _todayDate) <= 10 && _clubDate >= _todayDate) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,11 +150,15 @@ class _MainPageBodyState extends State<MainPageBody> {
     }
 
     DateFormat format = new DateFormat("MM-dd-yyyy");
+    DateFormat secondFormat = new DateFormat("yyyy-MM-dd");
 
     var theSnapshot = widget.snapshot.data;
     for(int i = 0; i < theSnapshot.length; i++) {
       DocumentSnapshot snapshot = theSnapshot[i];
-      if(format.parse(snapshot.data['date']).isBefore(DateTime.now())) {
+      if(format.parse(snapshot.data['date']).isBefore(secondFormat.parse(DateTime.now().toString()))) {
+        theSnapshot.remove(theSnapshot[i]);
+      }
+      if(snapshot.data['type'] == "clubDates" && _clubDateNotWithin10Days(snapshot)) {
         theSnapshot.remove(theSnapshot[i]);
       }
     }
@@ -158,7 +174,7 @@ class _MainPageBodyState extends State<MainPageBody> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget> [
-                Padding(padding: EdgeInsets.all(12)),
+                Padding(padding: EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical * 2.5)),
                 Text(timeOfDay, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold)),
                 Text(userData.firstName, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold),),
                 Padding(padding: EdgeInsets.all(6)),

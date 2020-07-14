@@ -4,6 +4,7 @@ import 'package:ffa_app/size_config.dart';
 import 'package:ffa_app/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class ImportantDates extends StatefulWidget {
   @override
@@ -66,16 +67,14 @@ class _ImportantDatesState extends State<ImportantDates> {
                   ]
                 ),
               Container(
-                height: SizeConfig.blockSizeVertical * 27.5,
+                height: SizeConfig.blockSizeVertical * 70,
                 width: SizeConfig.blockSizeHorizontal * 85,
                 child: FutureBuilder(
                   future: getPosts(),
                   builder: (_, snapshot) {
                     if(snapshot.connectionState == ConnectionState.waiting) {
                       return Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                        ),
+                        child: CircularProgressIndicator(),
                       );
                     }
                   return snapshot.data.length == 0 ? Center(child: Text("NO CLUB DATES", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 30),)) : ListView.builder(
@@ -154,6 +153,8 @@ class _ImportantDatesState extends State<ImportantDates> {
   }
 
   Widget setClubDates(String editOrNew, String type, String oldDate, String quarter, var partipates) {
+    DateFormat format = new DateFormat("MM-dd-yyyy");
+    DateTime editDate = format.parse(oldDate);
     return Container(
       height: SizeConfig.blockSizeVertical * 43,
       child: Column(
@@ -162,15 +163,16 @@ class _ImportantDatesState extends State<ImportantDates> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               FlatButton(
-                onPressed: () {
-                  setState(() {
-                    if(type == "clubDates" && editOrNew == "new") {
-                      sendDateToDatabase("clubDates", _date);
-                    }
-                    else {
-                      editDateToDatabase("clubDates", oldDate, _date, partipates);
-                    }
-                    Navigator.of(context).pop();
+                onPressed: () async {
+                  if(type == "clubDates" && editOrNew == "new") {
+                    await sendDateToDatabase("clubDates", _date);
+                  }
+                  else {
+                    await editDateToDatabase("clubDates", oldDate, _date, partipates);
+                  }
+                  Navigator.of(context).pop();
+                  super.setState(() {
+                    
                   });
                 },
                 child: Text("DONE", style: TextStyle(color: Theme.of(context).accentColor), textAlign: TextAlign.right,),
@@ -186,7 +188,7 @@ class _ImportantDatesState extends State<ImportantDates> {
           Container(
             height: MediaQuery.of(context).copyWith().size.height / 3,
             child: CupertinoDatePicker(
-              initialDateTime: DateTime.now(),
+              initialDateTime: editOrNew == "edit" ? editDate : DateTime.now(),
               onDateTimeChanged: (DateTime newDate) {
                 _date = newDate.toString().substring(5, 7) + "-" + newDate.toString().substring(8, 10) + "-" + newDate.toString().substring(0, 4);
               },

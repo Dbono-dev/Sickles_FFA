@@ -7,7 +7,7 @@ class FeedPage extends StatelessWidget {
 
   Future getPosts() async {
     var firestore = Firestore.instance;
-    QuerySnapshot qn = await firestore.collection("posts").getDocuments();
+    QuerySnapshot qn = await firestore.collection("posts").orderBy('dateTime', descending: true).getDocuments();
     
     return qn.documents;
   }

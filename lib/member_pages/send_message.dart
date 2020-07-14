@@ -63,7 +63,15 @@ class _SendMessagesState extends State<SendMessages> {
                 ),
               ),
               centerTitle: true,
-              title: Material(child: Center(child: Text(recieverName, style: TextStyle(fontSize: 40),))),
+              title: Material(
+                color: Colors.transparent,
+                child: Center(
+                  child: Text(
+                    recieverName, 
+                    style: TextStyle(fontSize: 40),
+                  )
+                )
+              ),
             ),
             body: SingleChildScrollView(
               child: Container(
