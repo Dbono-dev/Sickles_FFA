@@ -113,16 +113,18 @@ class _SendImagesState extends State<SendImages> {
                       elevation: 10,
                       color: Theme.of(context).primaryColor,
                       onPressed: () async {
-                        Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Sending Image...", style: TextStyle(color: Theme.of(context).primaryColor),),
-                            backgroundColor: Theme.of(context).accentColor,
-                            duration: Duration(seconds: 3),
-                        ));
-                        await sendImages();
-                        setState(() {
-                          theImages.clear();
-                        });
+                        if(theImages.length != 0) {
+                          Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Sending Image...", style: TextStyle(color: Theme.of(context).primaryColor),),
+                              backgroundColor: Theme.of(context).accentColor,
+                              duration: Duration(seconds: 3),
+                          ));
+                          await sendImages();
+                          setState(() {
+                            theImages.clear();
+                          });
+                        }
                       },
                       child: Text("Send Images", style: TextStyle(color: Theme.of(context).accentColor),)
                     );

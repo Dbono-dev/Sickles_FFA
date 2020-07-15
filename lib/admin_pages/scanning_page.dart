@@ -51,16 +51,30 @@ class _ScanningPageState extends State<ScanningPage> {
               RaisedButton(
                 elevation: 10,
                 color: Colors.white,
-                onPressed: () {
-
+                onPressed: () async {
+                  for(int i = 0; i < theScanUID.length; i++) {
+                    String text = "";
+                    text += theScanEvent[i];
+                    text += "/" + theScanUID[i];
+                    text += "/" + theScanName[i];
+                    text += "/" + theScanDate[i];
+                    await ScannedData(text: text, date: theScanDate[i]).saveScanningSession();
+                  }
                 },
                 child: Text("Save"),
               ),
               RaisedButton(
                 elevation: 10,
                 color: Colors.white,
-                onPressed: () {
-
+                onPressed: () async {
+                  for(int i = 0; i < theScanUID.length; i++) {
+                    String text = "";
+                    text += theScanEvent[i];
+                    text += "/" + theScanUID[i];
+                    text += "/" + theScanName[i];
+                    text += "/" + theScanDate[i];
+                    await ScannedData(text: text, date: theScanDate[i]).submitScanningSession();
+                  }
                 },
                 child: Text("Submit"),
               )
@@ -91,7 +105,6 @@ class _ScanningPageState extends State<ScanningPage> {
                 var result = await BarcodeScanner.scan();
                 HapticFeedback.vibrate();
                 List theListOfData = await ScannedData(text: result.rawContent, date: DateTime.now().month.toString() + "/" + DateTime.now().day.toString() + "/" + DateTime.now().year.toString()).resisterScanData();
-                print(theListOfData);
                 setState(() {
                   theScanUID.add(theListOfData[1]);
                   theScanName.add(theListOfData[2]);

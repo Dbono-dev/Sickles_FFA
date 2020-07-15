@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ffa_app/admin_pages/add_event.dart';
 import 'package:ffa_app/database.dart';
 import 'package:ffa_app/main.dart';
 import 'package:ffa_app/size_config.dart';
@@ -71,14 +72,57 @@ class _EventViewPageState extends State<EventViewPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget> [
-              ReturnButton(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  ReturnButton(),
+                  Spacer(),
+                  widget.userData.permissions == 2 ? IconButton(
+                    iconSize: 50,
+                    icon: Icon(Icons.edit, color: Theme.of(context).primaryColor,), 
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddEvent(snapshot: widget.snapshot, type: "edit",)));
+                    }
+                  ) : Container(),
+                  widget.userData.permissions == 2 ? IconButton(
+                    iconSize: 50,
+                    icon: Icon(Icons.delete, color: Theme.of(context).primaryColor), 
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("Confirmation"),
+                            content: Text("Are you sure you would like to delete this event? There is no way to recover this event once it is deleted"),
+                            actions: [
+                              FlatButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: Text("Cancel")
+                              ),
+                              FlatButton(
+                                onPressed: () async {
+                                  await Firestore.instance.collection('events').document(widget.snapshot.data['date'] + widget.snapshot.data['title']).delete();
+                                }, 
+                                child: Text("Delete", style: TextStyle(color: Colors.red),)
+                              )
+                            ],
+                          );
+                        }
+                      );
+                    }
+                  ) : Container()
+                ],
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
                       if(widget.snapshot.data['type'] == "clubDates") {
-                        if(x == 0) { 
+                        if(widget.userData.permissions == 4) {
+                          bottomOfCard = "";
+                        }
+                        else if(x == 0) { 
                           x = 1;
                           bottomOfCard = "Tap to show details";
                         }
@@ -88,7 +132,7 @@ class _EventViewPageState extends State<EventViewPage> {
                         }
                       }
                       else {
-                        if(widget.userData.permissions >= 1 || !widget.snapshot.data['participates'].contains(widget.userData.uid)) {
+                        if(widget.userData.permissions == 4 || !widget.snapshot.data['participates'].contains(widget.userData.uid)) {
                           bottomOfCard = "";
                         }
                         else if(x == 0) { 
@@ -125,9 +169,9 @@ class _EventViewPageState extends State<EventViewPage> {
                                   style: TextStyle(fontSize: 25, color: Colors.white), 
                                   textAlign: TextAlign.center,),
                               )) : Container(),
-                            x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: SizeConfig.blockSizeVertical * 35,) : Container(),
+                            x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: SizeConfig.blockSizeVertical * 30,) : Container(),
                             Spacer(),
-                            widget.userData.permissions > 1 || !widget.snapshot.data['participates'].contains(widget.userData.uid) ? Container() : SizedBox(
+                            widget.userData.permissions > 3 || !widget.snapshot.data['participates'].contains(widget.userData.uid) ? Container() : SizedBox(
                               width: SizeConfig.blockSizeHorizontal * 100,
                               child: FittedBox(
                                 fit: BoxFit.contain,
@@ -141,7 +185,7 @@ class _EventViewPageState extends State<EventViewPage> {
                                 ),
                               ),
                             ),
-                            widget.snapshot.data['type'] == 'clubDates' && widget.userData.permissions < 1 ? SizedBox(
+                            widget.snapshot.data['type'] == 'clubDates' && widget.userData.permissions < 4 ? SizedBox(
                               width: SizeConfig.blockSizeHorizontal * 100,
                               child: FittedBox(
                                 fit: BoxFit.contain,

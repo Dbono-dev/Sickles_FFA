@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:ffa_app/admin_pages/add_event.dart';
 import 'package:ffa_app/admin_pages/add_post.dart';
 import 'package:ffa_app/admin_pages/export_data.dart';
-import 'package:ffa_app/admin_pages/scanning_page.dart';
 import 'package:ffa_app/admin_pages/view_attendence.dart';
 import 'package:ffa_app/admin_pages/view_images.dart';
 import 'package:ffa_app/admin_pages/view_messages.dart';
@@ -121,7 +120,7 @@ class ProfilePage extends StatelessWidget {
             child: Text("Recent", style: TextStyle(fontSize: 45, color: Theme.of(context).accentColor, decoration: TextDecoration.underline),),
           ),
           userData.permissions == 3 ? Container() : SizedBox(
-            height: SizeConfig.blockSizeVertical * 15,
+            height: SizeConfig.blockSizeVertical * 17,
             child: eventTitle.length == 0 ? Center(child: Text("No Recent Events", style: TextStyle(fontSize: 25, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),)) : ListView.builder(
               padding: EdgeInsets.all(0),
               itemCount: eventTitle.length,
@@ -131,7 +130,7 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(15, 15, 0, 0),
+            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -168,7 +167,7 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           Container(
-            height: userData.permissions == 3 ? SizeConfig.blockSizeVertical * 53 : SizeConfig.blockSizeVertical * 27,
+            height: userData.permissions == 3 ? SizeConfig.blockSizeVertical * 53 : SizeConfig.blockSizeVertical * 28,
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[
@@ -240,7 +239,7 @@ class ProfilePage extends StatelessWidget {
                 moreActionsTiles(Icons.assignment, "View Minutes", context, ViewMinutes()),
                 moreActionsTiles(Icons.image, "View Images", context, ViewImages()),
                 moreActionsTiles(Icons.message, "View Messages", context, ViewMessages()),
-                moreActionsTiles(Icons.calendar_today, "Set Club Dates", context, ImportantDates()),
+                userData.permissions == 2 ? moreActionsTiles(Icons.calendar_today, "Set Club Dates", context, ImportantDates()) : Container(),
                 moreActionsTiles(Icons.settings, "Settings", context, Settings())
               ],
             ),
@@ -251,7 +250,7 @@ class ProfilePage extends StatelessWidget {
 
   Widget studentRecentTiles(BuildContext context, String title, String date) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+      padding: EdgeInsets.fromLTRB(15, 5, 0, 0),
       child: Container(
         height: 65,
         width: 375,

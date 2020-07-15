@@ -1,11 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/database.dart';
 import 'package:ffa_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:ffa_app/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
+import 'package:intl/intl.dart';
 
 class AddEvent extends StatefulWidget {
+
+  AddEvent({this.snapshot, this.type});
+
+  final DocumentSnapshot snapshot;
+  final String type;
 
   @override
   _AddEventState createState() => _AddEventState();
@@ -38,11 +45,52 @@ class _AddEventState extends State<AddEvent> {
   String _date;
   String _max;
   bool theSwitch;
+  DateTime theInitialStartTime;
+  DateTime theInitialEndTime;
 
   @override
   Widget build(BuildContext context) {
     final _thirdformKey = GlobalKey<FormState>();
     String _bottomText = "Create Event";
+    String _snackBarText = "Created Event";
+    DocumentSnapshot _snapshot = widget.snapshot;
+    DateFormat format = new DateFormat("MM-dd-yyyy");
+    DateFormat time = new DateFormat("HH:mm");
+
+    if(widget.type == "edit") {
+      _title = _snapshot.data['title'];
+      _description = _snapshot.data['description'];
+      _date = _snapshot.data['date'];
+      _newDateTime = format.parse(_snapshot.data['date']);
+      _startTime = int.parse(_snapshot.data['start time'].toString().substring(0, 2));
+      if(int.parse(_snapshot.data['start time'].toString().substring(3, 4)) == 0) {
+        _startTimeMinutes = 0;
+      }
+      else {
+        _startTimeMinutes = int.parse(_snapshot.data['start time'].toString().substring(3, 5));
+      }
+      _endTime = int.parse(_snapshot.data['end time'].toString().substring(0, 2));
+      if(int.parse(_snapshot.data['end time'].toString().substring(3, 4)) == 0) {
+        _endTimeMinutes = 0;
+      }
+      else {
+        _endTimeMinutes = int.parse(_snapshot.data['end time'].toString().substring(3, 5));
+      }
+      _address = _snapshot.data['location'];
+      _max = _snapshot.data['max participates'];
+      startDate = format.parse(_snapshot.data['date']);
+      theInitialStartTime = time.parse(_snapshot.data['start time']);
+      theInitialEndTime = time.parse(_snapshot.data['end time']);
+      _bottomText = "Save Event";
+      if(_snapshot.data['information dialog'] == true) {
+        theSwitch = true;
+      }
+      _snackBarText = "Saved Event";
+    }
+    else {
+      theInitialStartTime = newDateTime();
+      theInitialEndTime = newDateTime();
+    }
 
     if(theStartTime == null) {
       theStartTime = "Start Time";
@@ -131,9 +179,11 @@ class _AddEventState extends State<AddEvent> {
                             borderRadius: 16,
                             theme: ThemeData(primarySwatch: Colors.blue),
                           );
-                          setState(() {
-                            startingDate = _newDateTime.month.toString() + "/" + _newDateTime.day.toString() + "/" + _newDateTime.year.toString();
-                          });
+                          if(_newDateTime != null) {
+                            setState(() {
+                              startingDate = _newDateTime.month.toString() + "/" + _newDateTime.day.toString() + "/" + _newDateTime.year.toString();
+                            });
+                          }
                         },
                       ),
                       OutlineButton(
@@ -149,10 +199,13 @@ class _AddEventState extends State<AddEvent> {
                           return Container(
                               height: MediaQuery.of(context).copyWith().size.height / 3,
                               child: CupertinoDatePicker(
-                                initialDateTime: newDateTime(),
+                                initialDateTime: theInitialStartTime,
                                 onDateTimeChanged: (DateTime newdate) {
                                   _startTime = newdate.hour;
                                   _startTimeMinutes = newdate.minute;
+                                  if(_startTimeMinutes == 0) {
+                                    theStartTime = _startTime.toString() + ":" + "00";
+                                  }
                                   theStartTime = _startTime.toString() + ":" + _startTimeMinutes.toString();
                                   setState(() {
                                     
@@ -180,7 +233,7 @@ class _AddEventState extends State<AddEvent> {
                               return Container(
                                   height: MediaQuery.of(context).copyWith().size.height / 3,
                                   child: CupertinoDatePicker(
-                                    initialDateTime: newDateTime(),
+                                    initialDateTime: theInitialEndTime,
                                     onDateTimeChanged: (DateTime newdate) {
                                       _endTime = newdate.hour;
                                       _endTimeMinutes = newdate.minute;
@@ -310,7 +363,7 @@ class _AddEventState extends State<AddEvent> {
                                     });
                                     Scaffold.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text("Event Created", style: TextStyle(color: Theme.of(context).accentColor),),
+                                        content: Text(_snackBarText, style: TextStyle(color: Theme.of(context).accentColor),),
                                         backgroundColor: Theme.of(context).primaryColor,
                                         elevation: 8,
                                         duration: Duration(seconds: 3),
