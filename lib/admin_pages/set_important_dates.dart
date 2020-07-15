@@ -58,7 +58,7 @@ class _ImportantDatesState extends State<ImportantDates> {
                           ),
                           onPressed: () {
                             showModalBottomSheet(context: context, isDismissible: false, builder: (BuildContext builder) {
-                              return setClubDates("new", "clubDates", "", "", "");
+                              return setClubDates("new", "clubDates", "", "", "", "");
                             });
                           },
                         )
@@ -104,7 +104,7 @@ class _ImportantDatesState extends State<ImportantDates> {
                                 ),
                                 onPressed: () {
                                   showModalBottomSheet(context: context, isDismissible: false, builder: (BuildContext builder) {
-                                    return setClubDates("edit", "clubDates", snapshot.data[index].data['date'].toString(), "", snapshot.data[index].data['participates']);
+                                    return setClubDates("edit", "clubDates", snapshot.data[index].data['date'].toString(), "", snapshot.data[index].data['participates'], snapshot.data[index].data['agenda']);
                                   });
                                 }
                               ),
@@ -140,19 +140,19 @@ class _ImportantDatesState extends State<ImportantDates> {
     );
   }
 
-  Future sendDateToDatabase(String type, String date) async {
-    await DatabaseImporantDates().setImportantDates(type, date, []);
+  Future sendDateToDatabase(String type, String date, String agenda) async {
+    await DatabaseImporantDates().setImportantDates(type, date, [], agenda);
   }
 
-  Future editDateToDatabase(String type, String newDate, String oldDate, var participates) async {
-    await DatabaseImporantDates().updateImportantDates(type, oldDate, newDate, participates);
+  Future editDateToDatabase(String type, String newDate, String oldDate, var participates, String agenda) async {
+    await DatabaseImporantDates().updateImportantDates(type, oldDate, newDate, participates, agenda);
   }
 
   Future deleteDateToDatabase(String type, String date) async {
     await DatabaseImporantDates().deleteImportantDates(type, date);
   }
 
-  Widget setClubDates(String editOrNew, String type, String oldDate, String quarter, var partipates) {
+  Widget setClubDates(String editOrNew, String type, String oldDate, String quarter, var partipates, String agenda) {
     DateFormat format = new DateFormat("MM-dd-yyyy");
     DateTime editDate = format.parse(oldDate);
     return Container(
@@ -165,10 +165,10 @@ class _ImportantDatesState extends State<ImportantDates> {
               FlatButton(
                 onPressed: () async {
                   if(type == "clubDates" && editOrNew == "new") {
-                    await sendDateToDatabase("clubDates", _date);
+                    await sendDateToDatabase("clubDates", _date, agenda);
                   }
                   else {
-                    await editDateToDatabase("clubDates", oldDate, _date, partipates);
+                    await editDateToDatabase("clubDates", oldDate, _date, partipates, agenda);
                   }
                   Navigator.of(context).pop();
                   super.setState(() {

@@ -231,7 +231,7 @@ class ProfilePage extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[
-                userData.permissions == 2 ? moreActionsTiles(Icons.event, "Add Event", context, AddEvent()) : Container(),
+                userData.permissions == 2 ? moreActionsTiles(Icons.event, "Add Event", context, AddEvent(type: "new")) : Container(),
                 userData.permissions == 2 ? moreActionsTiles(Icons.message, "Add Post", context, AddPost()) : Container(),
                 moreActionsTiles(Icons.people, "View Attendence", context, ViewAttendence()),
                 moreActionsTiles(Icons.camera_alt, "Start Scanning", context, ScanningOptionsPage()),

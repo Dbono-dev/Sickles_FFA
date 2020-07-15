@@ -6,13 +6,14 @@ import 'package:ffa_app/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:ffa_app/main_page.dart';
 
 class AddEvent extends StatefulWidget {
 
   AddEvent({this.snapshot, this.type});
 
   final DocumentSnapshot snapshot;
-  final String type;
+  String type;
 
   @override
   _AddEventState createState() => _AddEventState();
@@ -87,6 +88,17 @@ class _AddEventState extends State<AddEvent> {
       }
       _snackBarText = "Saved Event";
     }
+    else if(widget.type == "club") {
+      _description = _snapshot.data['agenda'];
+      _title = "Club Meeting";
+      _date = _snapshot.data['date'];
+      _newDateTime = DateTime.now();
+      theStartTime = "10:56";
+      theEndTime = "11:31";
+      _address = "Sickles High";
+      _bottomText = "Save Club Meeting";
+      _snackBarText = "Saving...";
+    }
     else {
       theInitialStartTime = newDateTime();
       theInitialEndTime = newDateTime();
@@ -134,6 +146,7 @@ class _AddEventState extends State<AddEvent> {
                     child: Container(
                       padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 4.8, 0, SizeConfig.blockSizeHorizontal * 4.8, 0),
                       child: TextFormField(
+                        enabled: widget.type == "club" ? false : true,
                         decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         hintText: 'Title',
@@ -150,7 +163,7 @@ class _AddEventState extends State<AddEvent> {
                       padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 4.8, 0, SizeConfig.blockSizeHorizontal * 4.8, 0),
                       child: TextFormField(
                         decoration: InputDecoration(
-                          hintText: "Description",
+                          hintText: widget.type == "club" ? "Agenda" : "Description",
                           border: OutlineInputBorder()
                         ),
                         minLines: 3,
@@ -172,17 +185,19 @@ class _AddEventState extends State<AddEvent> {
                         borderSide: BorderSide(color: Theme.of(context).primaryColor, style: BorderStyle.solid, width: 3),
                         child: Text(startingDate),
                         onPressed: () async {
-                          _newDateTime = await showRoundedDatePicker(
-                            context: context,
-                            initialDate: startDate,
-                            lastDate: DateTime(DateTime.now().year + 1),
-                            borderRadius: 16,
-                            theme: ThemeData(primarySwatch: Colors.blue),
-                          );
-                          if(_newDateTime != null) {
-                            setState(() {
-                              startingDate = _newDateTime.month.toString() + "/" + _newDateTime.day.toString() + "/" + _newDateTime.year.toString();
-                            });
+                          if(widget.type != "club") {
+                            _newDateTime = await showRoundedDatePicker(
+                              context: context,
+                              initialDate: startDate,
+                              lastDate: DateTime(DateTime.now().year + 1),
+                              borderRadius: 16,
+                              theme: ThemeData(primarySwatch: Colors.blue),
+                            );
+                            if(_newDateTime != null) {
+                              setState(() {
+                                startingDate = _newDateTime.month.toString() + "/" + _newDateTime.day.toString() + "/" + _newDateTime.year.toString();
+                              });
+                            }
                           }
                         },
                       ),
@@ -193,32 +208,34 @@ class _AddEventState extends State<AddEvent> {
                         borderSide: BorderSide(color: Theme.of(context).primaryColor, style: BorderStyle.solid, width: 3),
                     child: Text(theStartTime),
                     onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                              height: MediaQuery.of(context).copyWith().size.height / 3,
-                              child: CupertinoDatePicker(
-                                initialDateTime: theInitialStartTime,
-                                onDateTimeChanged: (DateTime newdate) {
-                                  _startTime = newdate.hour;
-                                  _startTimeMinutes = newdate.minute;
-                                  if(_startTimeMinutes == 0) {
-                                    theStartTime = _startTime.toString() + ":" + "00";
-                                  }
-                                  theStartTime = _startTime.toString() + ":" + _startTimeMinutes.toString();
-                                  setState(() {
-                                    
-                                  });
-                                },
-                                use24hFormat: false,
-                                maximumDate: new DateTime(2030, 12, 30),
-                                minimumYear: 2020,
-                                maximumYear: 2030,
-                                minuteInterval: 15,
-                                mode: CupertinoDatePickerMode.time,
-                          ));
-                        });
+                      if(widget.type != "club") {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                                height: MediaQuery.of(context).copyWith().size.height / 3,
+                                child: CupertinoDatePicker(
+                                  initialDateTime: theInitialStartTime,
+                                  onDateTimeChanged: (DateTime newdate) {
+                                    _startTime = newdate.hour;
+                                    _startTimeMinutes = newdate.minute;
+                                    if(_startTimeMinutes == 0) {
+                                      theStartTime = _startTime.toString() + ":" + "00";
+                                    }
+                                    theStartTime = _startTime.toString() + ":" + _startTimeMinutes.toString();
+                                    setState(() {
+                                      
+                                    });
+                                  },
+                                  use24hFormat: false,
+                                  maximumDate: new DateTime(2030, 12, 30),
+                                  minimumYear: 2020,
+                                  maximumYear: 2030,
+                                  minuteInterval: 15,
+                                  mode: CupertinoDatePickerMode.time,
+                            ));
+                          });
+                      }
                     },
                   ),
                       OutlineButton(
@@ -227,29 +244,31 @@ class _AddEventState extends State<AddEvent> {
                         borderSide: BorderSide(color: Theme.of(context).primaryColor, style: BorderStyle.solid, width: 3),
                         child: Text(theEndTime),
                         onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                  height: MediaQuery.of(context).copyWith().size.height / 3,
-                                  child: CupertinoDatePicker(
-                                    initialDateTime: theInitialEndTime,
-                                    onDateTimeChanged: (DateTime newdate) {
-                                      _endTime = newdate.hour;
-                                      _endTimeMinutes = newdate.minute;
-                                      theEndTime = _endTime.toString() + ":" + _endTimeMinutes.toString();
-                                      setState(() {
-                                        
-                                      });
-                                    },
-                                    use24hFormat: false,
-                                    maximumDate: new DateTime(2030, 12, 30),
-                                    minimumYear: 2020,
-                                    maximumYear: 2030,
-                                    minuteInterval: 15,
-                                    mode: CupertinoDatePickerMode.time,
-                              ));
-                            });
+                          if(widget.type != "club") {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (context) {
+                                return Container(
+                                    height: MediaQuery.of(context).copyWith().size.height / 3,
+                                    child: CupertinoDatePicker(
+                                      initialDateTime: theInitialEndTime,
+                                      onDateTimeChanged: (DateTime newdate) {
+                                        _endTime = newdate.hour;
+                                        _endTimeMinutes = newdate.minute;
+                                        theEndTime = _endTime.toString() + ":" + _endTimeMinutes.toString();
+                                        setState(() {
+                                          
+                                        });
+                                      },
+                                      use24hFormat: false,
+                                      maximumDate: new DateTime(2030, 12, 30),
+                                      minimumYear: 2020,
+                                      maximumYear: 2030,
+                                      minuteInterval: 15,
+                                      mode: CupertinoDatePickerMode.time,
+                                ));
+                              });
+                          }
                         },
                       ),
                     ]
@@ -264,6 +283,7 @@ class _AddEventState extends State<AddEvent> {
                           border: OutlineInputBorder()
                       ),
                         onChanged: (val) => _address = val,
+                        enabled: widget.type == "club" ? false : true,
                         validator: (val) => val.isEmpty ? 'Enter Address or Location' : null,
                         initialValue: _address,
                       ),
@@ -277,6 +297,7 @@ class _AddEventState extends State<AddEvent> {
                         onChanged: (val) => _max = val,
                         initialValue: _max,
                         keyboardType: TextInputType.number,
+                        enabled: widget.type == "club" ? false : true,
                         validator: (val) => val.isEmpty ? 'Enter Max Number of Participants' : null,
                         decoration: InputDecoration(
                           hintText: "Max Number Of Participants",
@@ -293,7 +314,9 @@ class _AddEventState extends State<AddEvent> {
                         value: theSwitch,
                         onChanged: (bool change) {
                           setState(() {
-                            theSwitch = change;
+                            if(widget.type != "club") {
+                              theSwitch = change;
+                            }
                           });
                         }
                       ),
@@ -331,8 +354,12 @@ class _AddEventState extends State<AddEvent> {
                             print("clicked");
                             final form = _thirdformKey.currentState;
                             form.save();
-                            
-                            if(form.validate()) {
+                            print("got here");
+                            if(widget.type == "club") {
+                              await DatabaseImporantDates().updateAgenda(widget.snapshot.data['type'], widget.snapshot.data['date'], _description);
+                              Navigator.of(context).pop();
+                            }
+                            else if(form.validate()) {
                               try {
                                 try {
                                   _date = _newDateTime.toString().substring(5, 7) + "-" + _newDateTime.toString().substring(8, 10) + "-" + _newDateTime.toString().substring(0, 4);
@@ -344,32 +371,45 @@ class _AddEventState extends State<AddEvent> {
                                   await showErrorDialog("Please make sure to have both a start time and end time");
                                 }
                                 else {
-                                  dynamic result = sendEventToDatabase(_title, _date,  _description, _address, _startTime.toString() + ":" + _startTimeMinutes.toString(), _endTime.toString() + ":" + _endTimeMinutes.toString(), _max, "event", theSwitch);
-                                  if(result == null) {
-                                    print("Fill in all the forms.");
+                                  String _startTimeString;
+                                  String _endTimeString;
+                                  if(_startTime < 10) {
+                                    _startTimeString = "0" + _startTime.toString();
                                   }
                                   else {
-                                    setState(() {
-                                      _thirdformKey.currentState.reset();
-                                      _title = "";
-                                      _description = "";
-                                      _address = "";
-                                      _max = "";
-                                      theStartTime = null;
-                                      theEndTime = null;
-                                      _newDateTime = null;
-                                      _startTime = null;
-                                      _endTime = null;
-                                    });
-                                    Scaffold.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(_snackBarText, style: TextStyle(color: Theme.of(context).accentColor),),
-                                        backgroundColor: Theme.of(context).primaryColor,
-                                        elevation: 8,
-                                        duration: Duration(seconds: 3),
-                                      )
-                                    );
+                                    _startTimeString = _startTime.toString();
                                   }
+                                  if(_endTime < 10) {
+                                    _endTimeString = "0" + _endTime.toString();
+                                  }
+                                  else {
+                                    _endTimeString = _endTime.toString();
+                                  }
+                                  dynamic result = await sendEventToDatabase(_title, _date,  _description, _address, _startTimeString + ":" + _startTimeMinutes.toString(), _endTimeString + ":" + _endTimeMinutes.toString(), _max, "event", theSwitch, widget.type == "new" ? [] : widget.snapshot.data['participates'], widget.type == "new" ? [] : widget.snapshot.data['participates name'], widget.type == "new" ? [] : widget.snapshot.data['participates info'], widget.type == "edit" ? widget.snapshot.data['key'].toString() : "", widget.type == "edit" ? "save" : "submit");
+                                  Scaffold.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(_snackBarText, style: TextStyle(color: Theme.of(context).accentColor),),
+                                      backgroundColor: Theme.of(context).primaryColor,
+                                      elevation: 8,
+                                      duration: Duration(seconds: 3),
+                                    )
+                                  );
+                                  if(widget.type == "edit") {
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainPage()));
+                                  }
+                                  setState(() {
+                                    _thirdformKey.currentState.reset();
+                                    _title = "";
+                                    _description = "";
+                                    _address = "";
+                                    _max = "";
+                                    theStartTime = null;
+                                    theEndTime = null;
+                                    _newDateTime = null;
+                                    _startTime = null;
+                                    _endTime = null;
+                                    widget.type = "";
+                                  });
                                 }
                               }
                               catch (e) {
@@ -393,8 +433,8 @@ class _AddEventState extends State<AddEvent> {
     );
   }
 
-  Future sendEventToDatabase(String title, String date, String description, String location, String startTime, String endTime, String maxParticipates, String type, bool theSwitch) async {
-    await EventService().addEvent(title, date, description, location, startTime, endTime, maxParticipates, type, theSwitch);
+  Future sendEventToDatabase(String title, String date, String description, String location, String startTime, String endTime, String maxParticipates, String type, bool theSwitch, List participates, List participatesName, List participatesInfo, String key, String saveSubmit) async {
+    await EventService().addEvent(title, date, description, location, startTime, endTime, maxParticipates, type, theSwitch, participates, participatesName, participatesInfo, key, saveSubmit);
   }
 
   Future showErrorDialog(String text) {

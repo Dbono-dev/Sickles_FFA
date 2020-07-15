@@ -261,7 +261,7 @@ class _MainPageBodyState extends State<MainPageBody> {
     }
     else {
       title = "Club Meeting";
-      description = "";
+      description = snapshot.data['agenda'];
       location = "Sickles High";
       startTime = "10:56";
       startTimeBack = "am";

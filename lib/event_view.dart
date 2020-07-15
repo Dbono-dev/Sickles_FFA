@@ -47,7 +47,7 @@ class _EventViewPageState extends State<EventViewPage> {
     else {
       theQrContent = widget.snapshot.data['date'] + "/" + widget.userData.uid + "/" + widget.userData.firstName + " " + widget.userData.lastName;
       title = "Club Meeting";
-      description = "";
+      description = widget.snapshot.data['agenda'];
     }
 
     String qrContent = "";
@@ -81,7 +81,7 @@ class _EventViewPageState extends State<EventViewPage> {
                     iconSize: 50,
                     icon: Icon(Icons.edit, color: Theme.of(context).primaryColor,), 
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddEvent(snapshot: widget.snapshot, type: "edit",)));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddEvent(snapshot: widget.snapshot, type: widget.snapshot.data['type'] == "clubDates" ? "club" : "edit",)));
                     }
                   ) : Container(),
                   widget.userData.permissions == 2 ? IconButton(
@@ -267,7 +267,7 @@ class _EventViewPageState extends State<EventViewPage> {
                                           participates.add(user.uid);
                                           participatesInfo.add(_info);
                                           participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
-                                          await EventService().addParticipateswithInfo(participates, widget.snapshot.data['title'], widget.snapshot.data['date'], participatesInfo, participatesName);
+                                          await EventService().addParticipateswithInfo(participates, widget.snapshot.data['title'], widget.snapshot.data['date'], participatesInfo, participatesName, widget.snapshot.data['key'].toString());
                                           Navigator.of(context).pop();
                                           super.setState(() {
                                             show = false;
@@ -287,7 +287,7 @@ class _EventViewPageState extends State<EventViewPage> {
                               participatesName = widget.snapshot.data['participates name'];
                               participates.add(user.uid);
                               participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
-                              await EventService().addParticipates(participates, widget.snapshot.data['title'], widget.snapshot.data['date'], participatesName);
+                              await EventService().addParticipates(participates, widget.snapshot.data['title'], widget.snapshot.data['date'], participatesName, widget.snapshot.data['key'].toString());
                               Scaffold.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text("Signed Up", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
@@ -329,7 +329,7 @@ class _EventViewPageState extends State<EventViewPage> {
       child: Column(
         children: <Widget>[
           Padding(padding: EdgeInsets.fromLTRB(0, SizeConfig.blockSizeVertical * 2, 0, 0)),
-          Text("Participates", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30, fontWeight: FontWeight.bold, ),),
+          Text("Participants", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30, fontWeight: FontWeight.bold, ),),
           Container(
             height: SizeConfig.blockSizeVertical * 40,
             child: ListView.builder(

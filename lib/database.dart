@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/user.dart';
 
@@ -52,8 +54,13 @@ class EventService {
   
   final CollectionReference eventsCollection = Firestore.instance.collection('events');
 
-  Future addEvent(String title, String date, String description, String location, String startTime, String endTime, String maxParticipates, String type, bool theSwitch) async {
-    return await eventsCollection.document(date + title).setData({
+  Future addEvent(String title, String date, String description, String location, String startTime, String endTime, String maxParticipates, String type, bool theSwitch, List participate, List participateName, List participateInfo, String key, String saveSubmit) async {
+    Random random = Random.secure();
+    var randomNum = random.nextInt(100000);
+
+    print("got here");
+
+    return await eventsCollection.document(saveSubmit == "save" ? key : randomNum.toString()).setData({
       'title': title,
       'date': date, 
       'description': description,
@@ -62,23 +69,24 @@ class EventService {
       'end time': endTime,
       'max participates': maxParticipates,
       'type': type,
-      'participates': [],
-      'participates name': [],
-      'participates info': [],
-      'information dialog': theSwitch
+      'participates': participate,
+      'participates name': participateName,
+      'participates info': participateInfo,
+      'information dialog': theSwitch,
+      'key': saveSubmit == "save" ? key : randomNum
     });
   }
 
-  Future addParticipateswithInfo(List participates, String title, String date, List participatesInfo, List participatesName) async {
-    return await eventsCollection.document(date + title).updateData({
+  Future addParticipateswithInfo(List participates, String title, String date, List participatesInfo, List participatesName, String key) async {
+    return await eventsCollection.document(key).updateData({
       'participates': participates,
       'participates info': participatesInfo,
       'participates name': participatesName
     });
   }
 
-  Future addParticipates(List participates, String title, String date, List participatesName) async {
-    return await eventsCollection.document(date + title).updateData({
+  Future addParticipates(List participates, String title, String date, List participatesName, String key) async {
+    return await eventsCollection.document(key).updateData({
       'participates': participates,
       'participates name': participatesName
     });
@@ -151,17 +159,24 @@ class UploadedPictures {
 class DatabaseImporantDates {
   final CollectionReference importantDates = Firestore.instance.collection('club dates');
 
-  Future setImportantDates(String type, String date, var participates) async {
+  Future setImportantDates(String type, String date, var participates, String agenda) async {
     return await importantDates.document(type + date).setData({
       'type': type,
       'date': date,
-      'participates': participates
+      'participates': participates,
+      'agenda': agenda
     });
   }
 
-  Future updateImportantDates(String type, String newDate, String oldDate, var participates) async {
+  Future updateImportantDates(String type, String newDate, String oldDate, var participates, String agenda) async {
     await importantDates.document(type + oldDate).delete();
-    return setImportantDates(type, newDate, participates);
+    return setImportantDates(type, newDate, participates, agenda);
+  }
+
+  Future updateAgenda(String type, String date, String agenda) async {
+    return await importantDates.document(type + date).updateData({
+      'agenda': agenda
+    });
   }
 
   Future deleteImportantDates(String type, String date) async {
