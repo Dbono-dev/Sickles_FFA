@@ -42,6 +42,7 @@ dependencies:
   flutter_full_pdf_viewer: ^1.0.6
   intl: ^0.16.1
   jiffy: ^3.0.1
+  shared_preferences: ^0.5.8
 
 dev_dependencies:
   flutter_test:

@@ -167,7 +167,7 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           Container(
-            height: userData.permissions == 3 ? SizeConfig.blockSizeVertical * 53 : SizeConfig.blockSizeVertical * 28,
+            height: userData.permissions == 3 ? SizeConfig.blockSizeVertical * 53 : SizeConfig.blockSizeVertical * 32,
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[
@@ -227,13 +227,13 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           Container(
-            height: SizeConfig.blockSizeVertical * 53,
+            height: SizeConfig.blockSizeVertical * 57,
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[
                 userData.permissions == 2 ? moreActionsTiles(Icons.event, "Add Event", context, AddEvent(type: "new")) : Container(),
                 userData.permissions == 2 ? moreActionsTiles(Icons.message, "Add Post", context, AddPost()) : Container(),
-                moreActionsTiles(Icons.people, "View Attendence", context, ViewAttendence()),
+                moreActionsTiles(Icons.people, "View Attendance", context, ViewAttendence()),
                 moreActionsTiles(Icons.camera_alt, "Start Scanning", context, ScanningOptionsPage()),
                 moreActionsTiles(Icons.import_export, "Export Data", context, ExportData()),
                 moreActionsTiles(Icons.assignment, "View Minutes", context, ViewMinutes()),

@@ -81,17 +81,22 @@ class AuthService {
         );
     }
     else {
-      return CupertinoAlertDialog(
-        title: Text("Error Message"),
-        content: Text(body),
-        actions: <Widget>[
-          FlatButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text("Ok")
-          )
-        ],
+      return showDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text("Error Message"),
+            content: Text(body),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Ok")
+              )
+            ],
+          );
+        }
       );
     }
   }

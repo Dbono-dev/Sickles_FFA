@@ -52,7 +52,7 @@ class _MyHomePageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Padding(padding: EdgeInsets.all(8)),
+                  Padding(padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 6)),
                   SizedBox(
                     height: SizeConfig.blockSizeVertical * 22.5,
                     width: SizeConfig.blockSizeHorizontal * 100,

@@ -174,7 +174,7 @@ class _MainPageBodyState extends State<MainPageBody> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget> [
-                Padding(padding: EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical * 2.5)),
+                Padding(padding: EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical * 3)),
                 Text(timeOfDay, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold)),
                 Text(userData.firstName, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold),),
                 Padding(padding: EdgeInsets.all(6)),
