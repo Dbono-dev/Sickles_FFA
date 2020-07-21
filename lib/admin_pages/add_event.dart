@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/database.dart';
+import 'package:ffa_app/events.dart';
 import 'package:ffa_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:ffa_app/size_config.dart';
@@ -10,9 +11,9 @@ import 'package:ffa_app/main_page.dart';
 
 class AddEvent extends StatefulWidget {
 
-  AddEvent({this.snapshot, this.type});
+  AddEvent({this.event, this.type});
 
-  final DocumentSnapshot snapshot;
+  final Events event;
   String type;
 
   @override
@@ -54,44 +55,44 @@ class _AddEventState extends State<AddEvent> {
     final _thirdformKey = GlobalKey<FormState>();
     String _bottomText = "Create Event";
     String _snackBarText = "Created Event";
-    DocumentSnapshot _snapshot = widget.snapshot;
+    Events event = widget.event;
     DateFormat format = new DateFormat("MM-dd-yyyy");
     DateFormat time = new DateFormat("HH:mm");
 
     if(widget.type == "edit") {
-      _title = _snapshot.data['title'];
-      _description = _snapshot.data['description'];
-      _date = _snapshot.data['date'];
-      _newDateTime = format.parse(_snapshot.data['date']);
-      _startTime = int.parse(_snapshot.data['start time'].toString().substring(0, 2));
-      if(int.parse(_snapshot.data['start time'].toString().substring(3, 4)) == 0) {
+      _title = event.title;
+      _description = event.description;
+      _date = event.date;
+      _newDateTime = format.parse(event.date);
+      _startTime = int.parse(event.startTime.toString().substring(0, 2));
+      if(int.parse(event.startTime.toString().substring(3, 4)) == 0) {
         _startTimeMinutes = 0;
       }
       else {
-        _startTimeMinutes = int.parse(_snapshot.data['start time'].toString().substring(3, 5));
+        _startTimeMinutes = int.parse(event.startTime.toString().substring(3, 5));
       }
-      _endTime = int.parse(_snapshot.data['end time'].toString().substring(0, 2));
-      if(int.parse(_snapshot.data['end time'].toString().substring(3, 4)) == 0) {
+      _endTime = int.parse(event.endTime.toString().substring(0, 2));
+      if(int.parse(event.endTime.toString().substring(3, 4)) == 0) {
         _endTimeMinutes = 0;
       }
       else {
-        _endTimeMinutes = int.parse(_snapshot.data['end time'].toString().substring(3, 5));
+        _endTimeMinutes = int.parse(event.endTime.toString().substring(3, 5));
       }
-      _address = _snapshot.data['location'];
-      _max = _snapshot.data['max participates'];
-      startDate = format.parse(_snapshot.data['date']);
-      theInitialStartTime = time.parse(_snapshot.data['start time']);
-      theInitialEndTime = time.parse(_snapshot.data['end time']);
+      _address = event.location;
+      _max = event.maxParticipates;
+      startDate = format.parse(event.date);
+      theInitialStartTime = time.parse(event.startTime);
+      theInitialEndTime = time.parse(event.endTime);
       _bottomText = "Save Event";
-      if(_snapshot.data['information dialog'] == true) {
+      if(event.informationDialog == true) {
         theSwitch = true;
       }
       _snackBarText = "Saved Event";
     }
     else if(widget.type == "club") {
-      _description = _snapshot.data['agenda'];
+      _description = event.agenda;
       _title = "Club Meeting";
-      _date = _snapshot.data['date'];
+      _date = event.date;
       _newDateTime = DateTime.now();
       theStartTime = "10:56";
       theEndTime = "11:31";
@@ -356,7 +357,7 @@ class _AddEventState extends State<AddEvent> {
                             form.save();
                             print("got here");
                             if(widget.type == "club") {
-                              await DatabaseImporantDates().updateAgenda(widget.snapshot.data['type'], widget.snapshot.data['date'], _description);
+                              await DatabaseImporantDates().updateAgenda(event.type, event.type, _description);
                               Navigator.of(context).pop();
                             }
                             else if(form.validate()) {
@@ -385,7 +386,7 @@ class _AddEventState extends State<AddEvent> {
                                   else {
                                     _endTimeString = _endTime.toString();
                                   }
-                                  dynamic result = await sendEventToDatabase(_title, _date,  _description, _address, _startTimeString + ":" + _startTimeMinutes.toString(), _endTimeString + ":" + _endTimeMinutes.toString(), _max, "event", theSwitch, widget.type == "new" ? [] : widget.snapshot.data['participates'], widget.type == "new" ? [] : widget.snapshot.data['participates name'], widget.type == "new" ? [] : widget.snapshot.data['participates info'], widget.type == "edit" ? widget.snapshot.data['key'].toString() : "", widget.type == "edit" ? "save" : "submit");
+                                  dynamic result = await sendEventToDatabase(_title, _date,  _description, _address, _startTimeString + ":" + _startTimeMinutes.toString(), _endTimeString + ":" + _endTimeMinutes.toString(), _max, "event", theSwitch, widget.type == "new" ? [] : event.participates, widget.type == "new" ? [] : event.participatesName, widget.type == "new" ? [] : event.participatesInfo, widget.type == "edit" ? event.key.toString() : "", widget.type == "edit" ? "save" : "submit");
                                   Scaffold.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(_snackBarText, style: TextStyle(color: Theme.of(context).accentColor),),

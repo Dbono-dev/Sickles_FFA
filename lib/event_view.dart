@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/admin_pages/add_event.dart';
 import 'package:ffa_app/database.dart';
+import 'package:ffa_app/events.dart';
 import 'package:ffa_app/main.dart';
 import 'package:ffa_app/size_config.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,9 @@ import 'package:ffa_app/user.dart';
 
 class EventViewPage extends StatefulWidget {
 
-  EventViewPage({this.snapshot, this.userData});
+  EventViewPage({this.event, this.userData});
 
-  final DocumentSnapshot snapshot;
+  final Events event;
   final UserData userData;
 
   @override
@@ -31,23 +32,24 @@ class _EventViewPageState extends State<EventViewPage> {
     String theQrContent;
     String title;
     String description;
+    Events event = widget.event;
 
-    if(widget.snapshot.data['type'] != "clubDates") {
-      if(widget.snapshot.data['participates'].length == int.parse(widget.snapshot.data['max participates'])) {
+    if(event.type != "clubDates") {
+      if(event.participates.length == int.parse(event.maxParticipates)) {
         signUp = "EVENT FULL";
       }
 
-      if(widget.snapshot.data['participates'].contains(user.uid)) {
+      if(event.participates.contains(user.uid)) {
         signUp = "SIGNED UP";
       }
-      theQrContent = widget.snapshot.data['title'] + "/" + widget.userData.uid + "/" + widget.userData.firstName + " " + widget.userData.lastName;
-      title = widget.snapshot.data['title'];
-      description = widget.snapshot.data['description'];
+      theQrContent = event.title + "/" + widget.userData.uid + "/" + widget.userData.firstName + " " + widget.userData.lastName;
+      title = event.title;
+      description = event.description;
     }
     else {
-      theQrContent = widget.snapshot.data['date'] + "/" + widget.userData.uid + "/" + widget.userData.firstName + " " + widget.userData.lastName;
+      theQrContent = event.date + "/" + widget.userData.uid + "/" + widget.userData.firstName + " " + widget.userData.lastName;
       title = "Club Meeting";
-      description = widget.snapshot.data['agenda'];
+      description = event.agenda;
     }
 
     String qrContent = "";
@@ -81,7 +83,7 @@ class _EventViewPageState extends State<EventViewPage> {
                     iconSize: 50,
                     icon: Icon(Icons.edit, color: Theme.of(context).primaryColor,), 
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddEvent(snapshot: widget.snapshot, type: widget.snapshot.data['type'] == "clubDates" ? "club" : "edit",)));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddEvent(event: event, type: event.type == "clubDates" ? "club" : "edit",)));
                     }
                   ) : Container(),
                   widget.userData.permissions == 2 ? IconButton(
@@ -101,7 +103,7 @@ class _EventViewPageState extends State<EventViewPage> {
                               ),
                               FlatButton(
                                 onPressed: () async {
-                                  await Firestore.instance.collection('events').document(widget.snapshot.data['date'] + widget.snapshot.data['title']).delete();
+                                  await Firestore.instance.collection('events').document(event.date + event.title).delete();
                                 }, 
                                 child: Text("Delete", style: TextStyle(color: Colors.red),)
                               )
@@ -118,7 +120,7 @@ class _EventViewPageState extends State<EventViewPage> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      if(widget.snapshot.data['type'] == "clubDates") {
+                      if(event.type == "clubDates") {
                         if(widget.userData.permissions == 4) {
                           bottomOfCard = "";
                         }
@@ -132,7 +134,7 @@ class _EventViewPageState extends State<EventViewPage> {
                         }
                       }
                       else {
-                        if(widget.userData.permissions == 4 || !widget.snapshot.data['participates'].contains(widget.userData.uid)) {
+                        if(widget.userData.permissions == 4 || !event.participates.contains(widget.userData.uid)) {
                           bottomOfCard = "";
                         }
                         else if(x == 0) { 
@@ -158,9 +160,9 @@ class _EventViewPageState extends State<EventViewPage> {
                         child: Column(
                           children: <Widget> [
                             Text(title, style: TextStyle(fontSize: 32, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-                            Text(widget.snapshot.data['date'], style: TextStyle(fontSize: 25, color: Theme.of(context).accentColor),),
+                            Text(event.date, style: TextStyle(fontSize: 25, color: Theme.of(context).accentColor),),
                             Padding(padding: EdgeInsets.all(2)),
-                            x == 0 ? Text(widget.snapshot.data['type'] == "clubDates" ? "Agenda" : "Description", style: TextStyle(fontSize: 35, color: Colors.white, decoration: TextDecoration.underline),) : Container(),
+                            x == 0 ? Text(event.type == "clubDates" ? "Agenda" : "Description", style: TextStyle(fontSize: 35, color: Colors.white, decoration: TextDecoration.underline),) : Container(),
                             x == 0 ? SizedBox(
                               height: SizeConfig.blockSizeVertical * 20,
                               child: SingleChildScrollView(
@@ -171,7 +173,7 @@ class _EventViewPageState extends State<EventViewPage> {
                               )) : Container(),
                             x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: SizeConfig.blockSizeVertical * 30,) : Container(),
                             Spacer(),
-                            widget.userData.permissions > 3 || !widget.snapshot.data['participates'].contains(widget.userData.uid) ? Container() : SizedBox(
+                            widget.userData.permissions > 3 || !event.participates.contains(widget.userData.uid) ? Container() : SizedBox(
                               width: SizeConfig.blockSizeHorizontal * 100,
                               child: FittedBox(
                                 fit: BoxFit.contain,
@@ -185,7 +187,7 @@ class _EventViewPageState extends State<EventViewPage> {
                                 ),
                               ),
                             ),
-                            widget.snapshot.data['type'] == 'clubDates' && widget.userData.permissions < 4 ? SizedBox(
+                            event.type == 'clubDates' && widget.userData.permissions < 4 ? SizedBox(
                               width: SizeConfig.blockSizeHorizontal * 100,
                               child: FittedBox(
                                 fit: BoxFit.contain,
@@ -206,8 +208,8 @@ class _EventViewPageState extends State<EventViewPage> {
                   ),
                 ),
               ),
-              (widget.userData.permissions == 1 || widget.userData.permissions == 2) && widget.snapshot.data['type'] != "clubDates" ? viewParticipates(widget.snapshot.data['participates name'], widget.snapshot.data['participates info'], widget.snapshot.data['information dialog']) : Container(),
-              show == false || widget.userData.permissions >= 1 || widget.snapshot.data['type'] == "clubDates" ? Container() : Builder(
+              (widget.userData.permissions == 1 || widget.userData.permissions == 2) && event.type != "clubDates" ? viewParticipates(event.participatesName, event.participatesInfo, event.informationDialog) : Container(),
+              show == false || widget.userData.permissions >= 1 || event.type == "clubDates" ? Container() : Builder(
                 builder: (context) {
                   return Padding(
                     padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
@@ -221,7 +223,7 @@ class _EventViewPageState extends State<EventViewPage> {
 
                           }
                           else {
-                            if(widget.snapshot.data['information dialog'] == true) {
+                            if(event.informationDialog == true) {
                               await showDialog(
                                 context: context,
                                 builder: (context) {
@@ -261,13 +263,13 @@ class _EventViewPageState extends State<EventViewPage> {
                                           List participates = new List();
                                           List participatesInfo = new List();
                                           List participatesName = new List();
-                                          participates = widget.snapshot.data['participates'];
-                                          participatesInfo = widget.snapshot.data['participates info'];
-                                          participatesName = widget.snapshot.data['participates name'];
+                                          participates = event.participates;
+                                          participatesInfo = event.participatesInfo;
+                                          participatesName = event.participatesName;
                                           participates.add(user.uid);
                                           participatesInfo.add(_info);
                                           participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
-                                          await EventService().addParticipateswithInfo(participates, widget.snapshot.data['title'], widget.snapshot.data['date'], participatesInfo, participatesName, widget.snapshot.data['key'].toString());
+                                          await EventService().addParticipateswithInfo(participates, event.title, event.date, participatesInfo, participatesName, event.key.toString());
                                           Navigator.of(context).pop();
                                           super.setState(() {
                                             show = false;
@@ -283,11 +285,11 @@ class _EventViewPageState extends State<EventViewPage> {
                             else {
                               List participates = new List();
                               List participatesName = new List();
-                              participates = widget.snapshot.data['participates'];
-                              participatesName = widget.snapshot.data['participates name'];
+                              participates = event.participates;
+                              participatesName = event.participatesName;
                               participates.add(user.uid);
                               participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
-                              await EventService().addParticipates(participates, widget.snapshot.data['title'], widget.snapshot.data['date'], participatesName, widget.snapshot.data['key'].toString());
+                              await EventService().addParticipates(participates, event.title, event.date, participatesName, event.key.toString());
                               Scaffold.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text("Signed Up", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),

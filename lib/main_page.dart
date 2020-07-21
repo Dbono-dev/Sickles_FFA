@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/database.dart';
+import 'package:ffa_app/events.dart';
 import 'package:ffa_app/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:ffa_app/feed_page.dart';
@@ -31,9 +32,10 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     _tabController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    List<Events> theEventsList = new List<Events>();
 
     SizeConfig().init(context);
 
@@ -60,13 +62,59 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                   );
                 }
                 else {
-                  return Column(
-                    children: <Widget>[
-                      MainPageBody(
-                        snapshot: snapshot,
-                      ),
-                    ],
-                  );
+                  for(int i = 0; i < snapshot.data.length; i++) {
+                    theEventsList.add(
+                      Events(
+                        title: snapshot.data[i].data['title'],
+                        date: snapshot.data[i].data['date'],
+                        description: snapshot.data[i].data['description'],
+                        location: snapshot.data[i].data['location'],
+                        startTime: snapshot.data[i].data['start time'],
+                        endTime: snapshot.data[i].data['end time'],
+                        type: snapshot.data[i].data['type'],
+                        agenda: snapshot.data[i].data['agenda'] != null ? snapshot.data[i].data['agenda'] : "",
+                        participates: snapshot.data[i].data['participates'],
+                        participatesInfo: snapshot.data[i].data['participates info'],
+                        participatesName: snapshot.data[i].data['participates name'],
+                        maxParticipates: snapshot.data[i].data['max participates'],
+                        key: snapshot.data[i].data['key'],
+                        informationDialog: snapshot.data[i].data['information dialog']
+                    ));
+                  }
+  
+                  DateFormat format = new DateFormat("MM-dd-yyyy");
+                  DateFormat secondFormat = new DateFormat("yyyy-MM-dd");
+
+                  bool _clubDateNotWithin10Days(Events snapshot) {
+                    DateTime theDateTime = format.parse(snapshot.date);
+                    int _clubDate = Jiffy(theDateTime).dayOfYear;
+                    int _todayDate = Jiffy(DateTime.now()).dayOfYear;
+                    if((_clubDate - _todayDate) <= 10 && _clubDate >= _todayDate) {
+                      return false;
+                    }
+                    else {
+                      return true;
+                    }
+                  }
+
+                  for(int i = 0; i < theEventsList.length; i++) {
+                    Events snapshot = theEventsList[i];
+                    if(format.parse(snapshot.date).isBefore(secondFormat.parse(DateTime.now().toString()))) {
+                      theEventsList.remove(snapshot);
+                    }
+                    if(snapshot.type == "clubDates" && _clubDateNotWithin10Days(snapshot)) {
+                      theEventsList.remove(snapshot);
+                    }
+                  }
+
+                  if(theEventsList != null) {
+                    return MainPageBody(
+                      theEventList: theEventsList,
+                    );
+                  }
+                  else {
+                    return Text("NO EVENTS", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 35),);
+                  }
                 }
               },
             ),
@@ -86,7 +134,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                 Tab(
                   icon: Icon(Icons.home, size: 25,),
                   text: "Home",
-                  iconMargin: EdgeInsets.all(0),
+                  iconMargin: EdgeInsets.all(0), 
                 ),
                 Tab(
                   icon: Icon(Icons.dehaze, size: 25,),
@@ -107,9 +155,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
 
 class MainPageBody extends StatefulWidget {
 
-  MainPageBody({this.snapshot});
+  MainPageBody({this.theEventList});
 
-  final AsyncSnapshot<dynamic> snapshot;
+  final List<Events> theEventList;
 
   @override
   _MainPageBodyState createState() => _MainPageBodyState();
@@ -118,19 +166,6 @@ class MainPageBody extends StatefulWidget {
 class _MainPageBodyState extends State<MainPageBody> {
 
   int _index = 0;
-  DateFormat format = new DateFormat("MM-dd-yyyy");
-
-  bool _clubDateNotWithin10Days(DocumentSnapshot snapshot) {
-    DateTime theDateTime = format.parse(snapshot.data['date']);
-    int _clubDate = Jiffy(theDateTime).dayOfYear;
-    int _todayDate = Jiffy(DateTime.now()).dayOfYear;
-    if((_clubDate - _todayDate) <= 10 && _clubDate >= _todayDate) {
-      return false;
-    }
-    else {
-      return true;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,20 +182,6 @@ class _MainPageBodyState extends State<MainPageBody> {
     }
     else {
       timeOfDay = "Good Evening";
-    }
-
-    DateFormat format = new DateFormat("MM-dd-yyyy");
-    DateFormat secondFormat = new DateFormat("yyyy-MM-dd");
-
-    var theSnapshot = widget.snapshot.data;
-    for(int i = 0; i < theSnapshot.length; i++) {
-      DocumentSnapshot snapshot = theSnapshot[i];
-      if(format.parse(snapshot.data['date']).isBefore(secondFormat.parse(DateTime.now().toString()))) {
-        theSnapshot.remove(theSnapshot[i]);
-      }
-      if(snapshot.data['type'] == "clubDates" && _clubDateNotWithin10Days(snapshot)) {
-        theSnapshot.remove(theSnapshot[i]);
-      }
     }
 
     return Container(
@@ -181,9 +202,9 @@ class _MainPageBodyState extends State<MainPageBody> {
                 Center(
                   child: SizedBox(
                     height: SizeConfig.blockSizeVertical * 60,
-                    child: theSnapshot.length == 0 ? Center(child: Text("NO EVENTS", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 35),)) : PageView.builder(
+                    child: PageView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: theSnapshot.length,
+                      itemCount: widget.theEventList.length,
                       controller: PageController(viewportFraction: 0.825),
                       onPageChanged: (int theindex) => setState(() => _index = theindex),
                       itemBuilder: (_, i) {
@@ -192,7 +213,7 @@ class _MainPageBodyState extends State<MainPageBody> {
                             scale: i == _index ? 1 : 0.9,
                               child: SizedBox(
                                 height: SizeConfig.blockSizeVertical * 60,
-                                child: eventCard(context, theSnapshot[_index], userData),
+                                child: eventCard(context, widget.theEventList[_index], userData),
                               ),
                           ),
                         );
@@ -211,7 +232,7 @@ class _MainPageBodyState extends State<MainPageBody> {
     );
   }
 
-  Widget eventCard(BuildContext context, DocumentSnapshot snapshot, UserData userData) {
+  Widget eventCard(BuildContext context, Events event, UserData userData) {
     String startTimeBack;
     String endTimeBack;
     String startTime;
@@ -220,12 +241,12 @@ class _MainPageBodyState extends State<MainPageBody> {
     String description;
     String location;
 
-    if(snapshot.data['type'] != "clubDates") {
-      startTime = snapshot.data['start time'].toString();
-      endTime = snapshot.data['end time'].toString();
+    if(event.type != "clubDates") {
+      startTime = event.startTime.toString();
+      endTime = event.endTime.toString();
 
-      int startTimeTest = int.parse(snapshot.data['start time'].toString().substring(0, 2));
-      int startTimeMinutes = int.parse(snapshot.data['start time'].toString().substring(3));
+      int startTimeTest = int.parse(event.startTime.toString().substring(0, 2));
+      int startTimeMinutes = int.parse(event.startTime.toString().substring(3));
 
       if(startTimeTest >= 12) {
         startTimeTest = startTimeTest - 12;
@@ -240,8 +261,8 @@ class _MainPageBodyState extends State<MainPageBody> {
         startTime = startTimeTest.toString() + ":" + "00";
       }
 
-      int endTimeTest = int.parse(snapshot.data['end time'].toString().substring(0, 2));
-      int endTimeMinutes = int.parse(snapshot.data['end time'].toString().substring(3));
+      int endTimeTest = int.parse(event.endTime.toString().substring(0, 2));
+      int endTimeMinutes = int.parse(event.endTime.toString().substring(3));
 
       if(endTimeTest >= 12) {
         endTimeTest = endTimeTest - 12;
@@ -255,13 +276,13 @@ class _MainPageBodyState extends State<MainPageBody> {
       if(endTimeMinutes == 0) {
         endTime = endTimeTest.toString() + ":" + "00";
       }
-      title = snapshot.data['title'];
-      description = snapshot.data['description'];
-      location = snapshot.data['location'];
+      title = event.title;
+      description = event.description;
+      location = event.location;
     }
     else {
       title = "Club Meeting";
-      description = snapshot.data['agenda'];
+      description = event.agenda;
       location = "Sickles High";
       startTime = "10:56";
       startTimeBack = "am";
@@ -271,7 +292,7 @@ class _MainPageBodyState extends State<MainPageBody> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage(snapshot: snapshot, userData: userData,)));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage(event: event, userData: userData,)));
       },
       child: Container(
         height: SizeConfig.blockSizeVertical * 60,
@@ -290,12 +311,12 @@ class _MainPageBodyState extends State<MainPageBody> {
               child: Column(
                 children: <Widget> [
                   Text(title, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-                  Text(snapshot.data['date'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25)),
+                  Text(event.date, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25)),
                   SizedBox(
                     height: SizeConfig.blockSizeVertical * 5,
                     child: FittedBox(
                       fit: BoxFit.contain,
-                      child: Text(snapshot.data['type'] == "clubDates" ? "Agenda" : "Description", 
+                      child: Text(event.type == "clubDates" ? "Agenda" : "Description", 
                       style: TextStyle(
                         color: Colors.white, 
                         decoration: TextDecoration.underline)

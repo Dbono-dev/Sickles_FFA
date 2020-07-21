@@ -19,7 +19,7 @@ class Wrapper extends StatelessWidget {
         builder: (context, snapshot) {
           UserData userData = snapshot.data;
           if(snapshot.hasData) {
-            return MainPage();
+            return MainPage(); 
           }
           else {
             return Material(
