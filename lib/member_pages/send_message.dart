@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/database.dart';
+import 'package:ffa_app/main.dart';
 import 'package:ffa_app/size_config.dart';
 import 'package:ffa_app/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class SendMessages extends StatefulWidget {
@@ -51,15 +53,24 @@ class _SendMessagesState extends State<SendMessages> {
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
+              elevation: 0,
               backgroundColor: Colors.white,
-              leading: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                  size: 55,
+              leading: Card(
+                color: Theme.of(context).primaryColor,
+                elevation: 10,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)
+                ),
+                child: Center(
+                  child: IconButton(
+                    alignment: Alignment.center,
+                    iconSize: 35,
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    color: Theme.of(context).accentColor,
+                  ),
                 ),
               ),
               centerTitle: true,
@@ -68,7 +79,7 @@ class _SendMessagesState extends State<SendMessages> {
                 child: Center(
                   child: Text(
                     recieverName, 
-                    style: TextStyle(fontSize: 40),
+                    style: TextStyle(fontSize: 40, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),
                   )
                 )
               ),
@@ -87,7 +98,7 @@ class _SendMessagesState extends State<SendMessages> {
                       child: Card(
                         elevation: 10,
                         shape: RoundedRectangleBorder(
-                          side: BorderSide(color: Colors.grey, width: 2),
+                          side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
                           borderRadius: BorderRadius.circular(25)
                         ),
                         child: Container(
@@ -109,11 +120,13 @@ class _SendMessagesState extends State<SendMessages> {
                                 )).toList();
 
                                 return ListView(
+                                  reverse: true,
                                   controller: scrollController,
                                   children: <Widget>[
-                                    ... messages,
+                                    ... messages.reversed.toList(),
                                   ],
                                 ); 
+                                
                               }
                             },
                           ),
@@ -130,7 +143,7 @@ class _SendMessagesState extends State<SendMessages> {
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(25)),
-                                border: Border.all(color: Colors.grey)
+                                border: Border.all(color: Theme.of(context).primaryColor)
                               ),
                               width: SizeConfig.blockSizeHorizontal * 90,
                               child: Row(
@@ -142,8 +155,8 @@ class _SendMessagesState extends State<SendMessages> {
                                       padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                                       child: TextFormField(
                                         expands: true,
-                                        minLines: null,
                                         maxLines: null,
+                                        minLines: null,
                                         controller: messageController,
                                         decoration: InputDecoration(
                                           hintText: "Message...",
@@ -157,6 +170,9 @@ class _SendMessagesState extends State<SendMessages> {
                                     child: RaisedButton(
                                       color: Theme.of(context).primaryColor,
                                       elevation: 10,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10)
+                                      ),
                                       onPressed: () async {
                                         if(messageController.text.length > 0) {
                                           try {
@@ -190,7 +206,7 @@ class _SendMessagesState extends State<SendMessages> {
                                             'from': sender,
                                             'dateTime': DateTime.now()});
                                           messageController.clear();
-                                          scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+                                          //scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
                                         }
                                       },
                                       child: Text("Send", style: TextStyle(color: Theme.of(context).accentColor),),
@@ -228,7 +244,7 @@ class Message extends StatelessWidget {
           crossAxisAlignment: me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: <Widget> [
             Material(
-              color: me ? Colors.blue : Colors.grey,
+              color: me ? Theme.of(context).primaryColor : Theme.of(context).accentColor,
               borderRadius: BorderRadius.circular(10),
               elevation: 10,
               child: Container(

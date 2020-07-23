@@ -14,7 +14,6 @@ class _ViewAttendenceState extends State<ViewAttendence> {
   Future getPosts() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore.collection("members").getDocuments();
-    
     return qn.documents;
   }
 
@@ -23,6 +22,8 @@ class _ViewAttendenceState extends State<ViewAttendence> {
   bool firstCheck = false;
   bool secondCheck = false;
   bool thirdCheck = false;
+
+  List<String> checks = new List<String> ();
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +79,18 @@ class _ViewAttendenceState extends State<ViewAttendence> {
                             activeColor: Theme.of(context).accentColor,
                             value: freshman,
                             onChanged: (alsonewValue) {
-                              setState(() {
-                                freshman = alsonewValue;
-                              });
+                              if(checks.length == 0 || freshman) {
+                                setState(() {
+                                  if(freshman) {
+                                    checks.remove('freshman');
+                                    freshman = alsonewValue;
+                                  }
+                                  else {
+                                    checks.add('freshman');
+                                    freshman = alsonewValue;
+                                  }
+                                });
+                              }
                             },
                           ),
                           Text("10th Grade:"),
@@ -88,9 +98,18 @@ class _ViewAttendenceState extends State<ViewAttendence> {
                             activeColor: Theme.of(context).accentColor,
                             value: firstCheck,
                             onChanged: (newValue) {
-                              setState(() {
-                                firstCheck = newValue;
-                              });
+                              if(checks.length == 0 || firstCheck) {
+                                setState(() {
+                                  if(firstCheck) {
+                                    checks.remove('first');
+                                    firstCheck = newValue;
+                                  }
+                                  else {
+                                    checks.add('first');
+                                    firstCheck = newValue;
+                                  }
+                                });
+                              }
                             },
                           ),
                         ],
@@ -103,19 +122,37 @@ class _ViewAttendenceState extends State<ViewAttendence> {
                             activeColor: Theme.of(context).accentColor,
                             value: secondCheck,
                             onChanged: (theNewValue) {
-                              setState(() {
-                                secondCheck = theNewValue;
-                              });
-                            },
+                              if(checks.length == 0 || secondCheck) {
+                                setState(() {
+                                  if(secondCheck) {
+                                    checks.remove('second');
+                                    secondCheck = theNewValue;
+                                  }
+                                  else {
+                                    checks.add('second');
+                                    secondCheck = theNewValue;
+                                  }
+                                });
+                              }
+                            },  
                           ),
                           Text("12th Grade:"),
                           Checkbox(
                             activeColor: Theme.of(context).accentColor,
                             value: thirdCheck,
                             onChanged: (theNewValue2) {
-                              setState(() {
-                                thirdCheck = theNewValue2;
-                              });
+                              if(checks.length == 0 || thirdCheck) {
+                                setState(() {
+                                  if(thirdCheck) {
+                                    checks.remove('third');
+                                    thirdCheck = theNewValue2;
+                                  }
+                                  else {
+                                    checks.add('third');
+                                    thirdCheck = theNewValue2;
+                                  }
+                                });
+                              }
                             },
                           )
                         ]
@@ -150,32 +187,32 @@ class _ViewAttendenceState extends State<ViewAttendence> {
                             return Container();
                           }
                         }
-                        else if(freshman == true) {
-                          if(index.data[snapshot].data['grade'] == 9) {
+                        else if(freshman) {
+                          if(int.tryParse(index.data[snapshot].data['grade']) == 9 && index.data[snapshot].data['permissions'] != 1) {
                             return studentTiles(index.data[snapshot], context);
                           }
                           else {
                             return Container();
                           }
                         }
-                        else if(firstCheck == true) {
-                          if(index.data[snapshot].data['grade'] == 10) {
+                        else if(firstCheck) {
+                          if(int.tryParse(index.data[snapshot].data['grade']) == 10 && index.data[snapshot].data['permissions'] != 1) {
                             return studentTiles(index.data[snapshot], context);
                           }
                           else {
                             return Container();
                           }
                         }
-                        else if(secondCheck == true) {
-                          if(index.data[snapshot].data['grade'] == 11) {
+                        else if(secondCheck) {
+                          if(int.tryParse(index.data[snapshot].data['grade']) == 11 && index.data[snapshot].data['permissions'] != 1) {
                             return studentTiles(index.data[snapshot], context);
                           }
                           else {
                             return Container();
                           }
                         }
-                        else if(thirdCheck == true) {
-                          if(index.data[snapshot].data['grade'] == 12) {
+                        else if(thirdCheck) {
+                          if(int.tryParse(index.data[snapshot].data['grade']) == 12 && index.data[snapshot].data['permissions'] != 1) {
                             return studentTiles(index.data[snapshot], context);
                           }
                           else {

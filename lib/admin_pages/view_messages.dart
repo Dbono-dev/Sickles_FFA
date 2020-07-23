@@ -74,14 +74,15 @@ class ViewMessages extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => SendMessages(type: "officer", receiverName: receiverName, uid: uid)));
       },
       child: Card(
+        color: Theme.of(context).primaryColor,
         elevation: 10,
         margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Center(
           child: ListTile( 
-            leading: Text(receiverName, style: TextStyle(fontWeight: FontWeight.bold),),
-            title: Text(description, overflow: TextOverflow.ellipsis,),
-            trailing: Text(date.substring(0, 10), style: TextStyle(fontWeight: FontWeight.bold),),
+            leading: Text(receiverName, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor), textAlign: TextAlign.center,),
+            title: Text(description, overflow: TextOverflow.ellipsis, style: TextStyle(color: Theme.of(context).accentColor),),
+            trailing: Text(date.substring(0, 10), style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),),
           ),
         ),
       ),

@@ -190,7 +190,7 @@ class ProfilePage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-            padding: const EdgeInsets.fromLTRB(15, 15, 0, 0),
+            padding: EdgeInsets.fromLTRB(15, SizeConfig.blockSizeVertical * 2, 0, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -227,7 +227,7 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           Container(
-            height: SizeConfig.blockSizeVertical * 57,
+            height: SizeConfig.blockSizeVertical * 54,
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[

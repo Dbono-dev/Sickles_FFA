@@ -35,15 +35,30 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    List<Events> theEventsList = new List<Events>();
 
     SizeConfig().init(context);
+    int _index = 0;
+
+    final user = Provider.of<User>(context);
+
+    String timeOfDay = "";
+    int currentTime = DateTime.now().hour;
+    
+    if(currentTime > 4 && currentTime < 12) {
+      timeOfDay = "Good Morning";
+    }
+    else if(currentTime >= 12 && currentTime < 16) {
+      timeOfDay = "Good Afternoon";
+    }
+    else {
+      timeOfDay = "Good Evening";
+    }
 
     Future getPosts() async {
       var firestore = Firestore.instance;
       QuerySnapshot qn = await firestore.collection("events").orderBy('date').getDocuments();
       QuerySnapshot secondQn = await firestore.collection('club dates').orderBy('date').getDocuments();
-      return secondQn.documents + qn.documents;
+      return (secondQn.documents + qn.documents);
     }
 
     return DefaultTabController(
@@ -62,7 +77,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                   );
                 }
                 else {
-                  for(int i = 0; i < snapshot.data.length; i++) {
+                  int snapshotLength = snapshot.data.length;
+                  List<Events> theEventsList = new List<Events>();
+                  for(int i = 0; i < snapshotLength; i++) {
                     theEventsList.add(
                       Events(
                         title: snapshot.data[i].data['title'],
@@ -81,39 +98,55 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                         informationDialog: snapshot.data[i].data['information dialog']
                     ));
                   }
+
+                  List<Events> theList = new List<Events> ();
+                  for(int i = 0; i < theEventsList.length; i++) {
+                    theList.add(theEventsList[i]);
+                  }
   
                   DateFormat format = new DateFormat("MM-dd-yyyy");
                   DateFormat secondFormat = new DateFormat("yyyy-MM-dd");
 
-                  bool _clubDateNotWithin10Days(Events snapshot) {
-                    DateTime theDateTime = format.parse(snapshot.date);
+                  bool _clubDateNotWithin10Days(Events events) {
+                    DateTime theDateTime = format.parse(events.date);
                     int _clubDate = Jiffy(theDateTime).dayOfYear;
                     int _todayDate = Jiffy(DateTime.now()).dayOfYear;
-                    if((_clubDate - _todayDate) <= 10 && _clubDate >= _todayDate) {
-                      return false;
-                    }
-                    else {
+                    if(_clubDate - _todayDate >= 10) {
                       return true;
                     }
-                  }
-
-                  for(int i = 0; i < theEventsList.length; i++) {
-                    Events snapshot = theEventsList[i];
-                    if(format.parse(snapshot.date).isBefore(secondFormat.parse(DateTime.now().toString()))) {
-                      theEventsList.remove(snapshot);
-                    }
-                    if(snapshot.type == "clubDates" && _clubDateNotWithin10Days(snapshot)) {
-                      theEventsList.remove(snapshot);
+                    else {
+                      return false;
                     }
                   }
 
-                  if(theEventsList != null) {
-                    return MainPageBody(
-                      theEventList: theEventsList,
+                  for(int i = 0; i < snapshotLength; i++) {
+                    Events event = theEventsList[i];
+                    if(format.parse(event.date).isBefore(secondFormat.parse(DateTime.now().toString()))) {
+                      theList.remove(event);
+                    }
+                    else if(event.type.toString().trim().contains("clubDates") && _clubDateNotWithin10Days(event) == true) {
+                      theList.remove(event);
+                    }
+                    else {
+
+                    }
+                  }
+
+                  if(theList != null && theList.length != 0) {
+                    return TheLargeMainPage(
+                      user: user,
+                      timeOfDay: timeOfDay,
+                      theEventList: theList,
+                      type: "EVENTS",
                     );
                   }
                   else {
-                    return Text("NO EVENTS", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 35),);
+                    return TheLargeMainPage(
+                      user: user,
+                      timeOfDay: timeOfDay,
+                      theEventList: theList,
+                      type: "NOEVENTS",
+                    );
                   }
                 }
               },
@@ -153,41 +186,29 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   }
 }
 
-class MainPageBody extends StatefulWidget {
+class TheLargeMainPage extends StatefulWidget {
 
-  MainPageBody({this.theEventList});
+  TheLargeMainPage({this.user, this.timeOfDay, this.theEventList, this.type});
 
+  final User user; 
+  final String timeOfDay;
   final List<Events> theEventList;
+  final String type;
 
   @override
-  _MainPageBodyState createState() => _MainPageBodyState();
+  _TheLargeMainPageState createState() => _TheLargeMainPageState();
 }
 
-class _MainPageBodyState extends State<MainPageBody> {
+class _TheLargeMainPageState extends State<TheLargeMainPage> {
 
   int _index = 0;
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
-
-    String timeOfDay = "";
-    int currentTime = DateTime.now().hour;
-    
-    if(currentTime > 4 && currentTime < 12) {
-      timeOfDay = "Good Morning";
-    }
-    else if(currentTime >= 12 && currentTime < 16) {
-      timeOfDay = "Good Afternoon";
-    }
-    else {
-      timeOfDay = "Good Evening";
-    }
-
-    return Container(
+      return Container(
       color: Colors.white,
       child: StreamBuilder<UserData>(
-        stream: DatabaseService(uid: user.uid).userData,
+        stream: DatabaseService(uid: widget.user.uid).userData,
         builder: (context, snapshot) {
           UserData userData = snapshot.data;
 
@@ -196,13 +217,13 @@ class _MainPageBodyState extends State<MainPageBody> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget> [
                 Padding(padding: EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical * 3)),
-                Text(timeOfDay, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold)),
+                Text(widget.timeOfDay, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold)),
                 Text(userData.firstName, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold),),
                 Padding(padding: EdgeInsets.all(6)),
                 Center(
                   child: SizedBox(
                     height: SizeConfig.blockSizeVertical * 60,
-                    child: PageView.builder(
+                    child: widget.type == "NOEVENTS" ? Center(child: Text("NO EVENTS", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 35),)) : PageView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: widget.theEventList.length,
                       controller: PageController(viewportFraction: 0.825),
@@ -213,7 +234,7 @@ class _MainPageBodyState extends State<MainPageBody> {
                             scale: i == _index ? 1 : 0.9,
                               child: SizedBox(
                                 height: SizeConfig.blockSizeVertical * 60,
-                                child: eventCard(context, widget.theEventList[_index], userData),
+                                child: EventCard(event: widget.theEventList[_index], userData: userData),
                               ),
                           ),
                         );
@@ -231,8 +252,25 @@ class _MainPageBodyState extends State<MainPageBody> {
       ),
     );
   }
+}
 
-  Widget eventCard(BuildContext context, Events event, UserData userData) {
+class EventCard extends StatefulWidget {
+
+  EventCard({this.event, this.userData});
+
+  final Events event;
+  final UserData userData;
+
+  @override
+  _MainPageBodyState createState() => _MainPageBodyState();
+}
+
+class _MainPageBodyState extends State<EventCard> {
+  @override
+  Widget build(BuildContext context) {
+    Events event = widget.event;
+    UserData userData = widget.userData;
+
     String startTimeBack;
     String endTimeBack;
     String startTime;
@@ -344,6 +382,6 @@ class _MainPageBodyState extends State<MainPageBody> {
           ),
         )
       ),
-    );
+    );    
   }
 }
