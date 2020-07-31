@@ -68,7 +68,7 @@ class _EventViewPageState extends State<EventViewPage> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          height: widget.userData.permissions == 1 || widget.userData.permissions == 2 ? SizeConfig.blockSizeVertical * 140 : SizeConfig.blockSizeVertical * 100,
+          height: widget.userData.permissions == 1 || widget.userData.permissions == 2 ? SizeConfig.blockSizeVertical * 145 : SizeConfig.blockSizeVertical * 100,
           color: Colors.white,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -163,16 +163,15 @@ class _EventViewPageState extends State<EventViewPage> {
                             Text(event.date, style: TextStyle(fontSize: 25, color: Theme.of(context).accentColor),),
                             Padding(padding: EdgeInsets.all(2)),
                             x == 0 ? Text(event.type == "clubDates" ? "Agenda" : "Description", style: TextStyle(fontSize: 35, color: Colors.white, decoration: TextDecoration.underline),) : Container(),
-                            x == 0 ? SizedBox(
-                              height: SizeConfig.blockSizeVertical * 20,
+                            x == 0 ? Expanded(
                               child: SingleChildScrollView(
                                 child: Text(
                                   description, 
-                                  style: TextStyle(fontSize: 25, color: Colors.white), 
+                                  style: TextStyle(fontSize: 20, color: Colors.white), 
                                   textAlign: TextAlign.center,),
-                              )) : Container(),
-                            x == 1 ? QrImage(data: qrContent, foregroundColor: Colors.white, size: SizeConfig.blockSizeVertical * 30,) : Container(),
-                            Spacer(),
+                              ),
+                            ) : Container(),
+                            x == 1 ? Expanded(child: QrImage(data: qrContent, foregroundColor: Colors.white,)) : Container(),
                             widget.userData.permissions > 3 || !event.participates.contains(widget.userData.uid) ? Container() : SizedBox(
                               width: SizeConfig.blockSizeHorizontal * 100,
                               child: FittedBox(
@@ -208,117 +207,8 @@ class _EventViewPageState extends State<EventViewPage> {
                   ),
                 ),
               ),
+              show == false || widget.userData.permissions > 1 || event.type == "clubDates" ? Container() : signUpButton(event, user),
               (widget.userData.permissions == 1 || widget.userData.permissions == 2) && event.type != "clubDates" ? viewParticipates(event.participatesName, event.participatesInfo, event.informationDialog) : Container(),
-              show == false || widget.userData.permissions >= 1 || event.type == "clubDates" ? Container() : Builder(
-                builder: (context) {
-                  return Padding(
-                    padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () async {
-                          if(signUp == "EVENT FULL") {
-                            
-                          }
-                          else if(signUp == "SIGNED UP") {
-
-                          }
-                          else {
-                            if(event.informationDialog == true) {
-                              await showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text("Signing Up"),
-                                    content: SingleChildScrollView(
-                                      child: Container(
-                                        height: SizeConfig.blockSizeVertical * 75,
-                                        child: Column(
-                                          children: <Widget>[
-                                            Text("The creator of this event has requested that you add submit information when you sign up. Check the description for what to include in this text box.", textAlign: TextAlign.center,),
-                                            Material(
-                                              child: Container(
-                                                padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 2, SizeConfig.blockSizeVertical * 4, SizeConfig.blockSizeHorizontal * 2, 0),
-                                                child: TextFormField(
-                                                  decoration: InputDecoration(
-                                                  border: OutlineInputBorder(),
-                                                  hintText: 'Enter information here...',
-                                                ),
-                                                  onChanged: (val) => _info = (val),
-                                                  validator: (val) => val.isEmpty ? 'Enter Title' : null,
-                                                  initialValue: _info,
-                                                ),
-                                              )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    actions: <Widget>[
-                                      FlatButton(
-                                        onPressed: () => Navigator.of(context).pop(), 
-                                        child: Text("CANCEL")
-                                      ),
-                                      FlatButton(
-                                        onPressed: () async {
-                                          List participates = new List();
-                                          List participatesInfo = new List();
-                                          List participatesName = new List();
-                                          participates = event.participates;
-                                          participatesInfo = event.participatesInfo;
-                                          participatesName = event.participatesName;
-                                          participates.add(user.uid);
-                                          participatesInfo.add(_info);
-                                          participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
-                                          await EventService().addParticipateswithInfo(participates, event.title, event.date, participatesInfo, participatesName, event.key.toString());
-                                          Navigator.of(context).pop();
-                                          super.setState(() {
-                                            show = false;
-                                          });
-                                        }, 
-                                        child: Text("SUBMIT")
-                                      )
-                                    ],
-                                  );
-                                }
-                              );
-                            }
-                            else {
-                              List participates = new List();
-                              List participatesName = new List();
-                              participates = event.participates;
-                              participatesName = event.participatesName;
-                              participates.add(user.uid);
-                              participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
-                              await EventService().addParticipates(participates, event.title, event.date, participatesName, event.key.toString());
-                              Scaffold.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Signed Up", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
-                                  backgroundColor: Theme.of(context).primaryColor,
-                                  duration: Duration(seconds: 3),
-                                )
-                              );
-                              super.setState(() {
-                                show = false;
-                              });
-                            }
-                          }
-                        },
-                        child: Container(
-                          height: 60,
-                          width: SizeConfig.blockSizeHorizontal * 70,
-                          color: Colors.transparent,
-                          child: Card(
-                            color: Theme.of(context).primaryColor,
-                            elevation: 10,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            child: Center(child: Text(signUp, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35), textAlign: TextAlign.center,)),
-                          )
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              ),
             ]
           ),
         ),
@@ -332,33 +222,153 @@ class _EventViewPageState extends State<EventViewPage> {
         children: <Widget>[
           Padding(padding: EdgeInsets.fromLTRB(0, SizeConfig.blockSizeVertical * 2, 0, 0)),
           Text("Participants", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30, fontWeight: FontWeight.bold, ),),
-          Container(
-            height: SizeConfig.blockSizeVertical * 40,
-            child: ListView.builder(
-              padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 5, 0, SizeConfig.blockSizeHorizontal * 5, 0),
-              itemCount: participates.length,
-              itemBuilder: (_, i) {
-                return Card(
-                  color: Theme.of(context).primaryColor,
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  child: ListTile(
-                    title: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(participates[i], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20)),
-                        informationDialog == true ? Text(participatesInfo[i], style: TextStyle(color: Theme.of(context).accentColor)) : Container()
-                      ],
+          Center(
+            child: Container(
+              height: SizeConfig.blockSizeVertical * 40,
+              child: participates.length == 0 ? Padding(
+                padding: EdgeInsets.only(top: 6),
+                child: Text("NO PARTICIPANTS", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
+              ) : ListView.builder(
+                padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 5, 0, SizeConfig.blockSizeHorizontal * 5, 0),
+                itemCount: participates.length,
+                itemBuilder: (_, i) {
+                  return Card(
+                    color: Theme.of(context).primaryColor,
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    child: ListTile(
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(participates[i], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20)),
+                          informationDialog == true ? Text(participatesInfo[i], style: TextStyle(color: Theme.of(context).accentColor)) : Container()
+                        ],
+                      ),
+                      leading: Text((i + 1).toString() + ".", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
                     ),
-                    leading: Text((i + 1).toString() + ".", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
-                  ),
-                );
-              }
+                  );
+                }
+              ),
             ),
           )
         ],
       ),
+    );
+  }
+
+  Widget signUpButton(Events event, User user) {
+    String _info; 
+
+    return Builder(
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(0, 25, 0, 0),
+          child: Center(
+            child: GestureDetector(
+              onTap: () async {
+                if(signUp == "EVENT FULL") {
+                  
+                }
+                else if(signUp == "SIGNED UP") {
+
+                }
+                else {
+                  if(event.informationDialog == true) {
+                    await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Signing Up"),
+                          content: SingleChildScrollView(
+                            child: Container(
+                              height: SizeConfig.blockSizeVertical * 75,
+                              child: Column(
+                                children: <Widget>[
+                                  Text("The creator of this event has requested that you add submit information when you sign up. Check the description for what to include in this text box.", textAlign: TextAlign.center,),
+                                  Material(
+                                    child: Container(
+                                      padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 2, SizeConfig.blockSizeVertical * 4, SizeConfig.blockSizeHorizontal * 2, 0),
+                                      child: TextFormField(
+                                        decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        hintText: 'Enter information here...',
+                                      ),
+                                        onChanged: (val) => _info = (val),
+                                        validator: (val) => val.isEmpty ? 'Enter Title' : null,
+                                        initialValue: _info,
+                                      ),
+                                    )
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          actions: <Widget>[
+                            FlatButton(
+                              onPressed: () => Navigator.of(context).pop(), 
+                              child: Text("CANCEL")
+                            ),
+                            FlatButton(
+                              onPressed: () async {
+                                List participates = new List();
+                                List participatesInfo = new List();
+                                List participatesName = new List();
+                                participates = event.participates;
+                                participatesInfo = event.participatesInfo;
+                                participatesName = event.participatesName;
+                                participates.add(user.uid);
+                                participatesInfo.add(_info);
+                                participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
+                                await EventService().addParticipateswithInfo(participates, event.title, event.date, participatesInfo, participatesName, event.key.toString());
+                                Navigator.of(context).pop();
+                                super.setState(() {
+                                  show = false;
+                                });
+                              }, 
+                              child: Text("SUBMIT")
+                            )
+                          ],
+                        );
+                      }
+                    );
+                  }
+                  else {
+                    List participates = new List();
+                    List participatesName = new List();
+                    participates = event.participates;
+                    participatesName = event.participatesName;
+                    participates.add(user.uid);
+                    participatesName.add(widget.userData.firstName + " " + widget.userData.lastName);
+                    await EventService().addParticipates(participates, event.title, event.date, participatesName, event.key.toString());
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Signed Up", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25),),
+                        backgroundColor: Theme.of(context).primaryColor,
+                        duration: Duration(seconds: 3),
+                      )
+                    );
+                    super.setState(() {
+                      show = false;
+                    });
+                  }
+                }
+              },
+              child: Container(
+                height: 60,
+                width: SizeConfig.blockSizeHorizontal * 70,
+                color: Colors.transparent,
+                child: Card(
+                  color: Theme.of(context).primaryColor,
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  child: Center(child: Text(signUp, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35), textAlign: TextAlign.center,)),
+                )
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 }

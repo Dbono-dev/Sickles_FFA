@@ -5,6 +5,15 @@ import 'package:ffa_app/size_config.dart';
 
 class AddPost extends StatefulWidget {
 
+  AddPost({this.title, this.description, this.link, this.edit, this.dateTime, this.oGTitle});
+
+  final String title;
+  final String oGTitle;
+  final String description;
+  final String link;
+  final bool edit;
+  final String dateTime;
+
   @override
   _AddPostState createState() => _AddPostState();
 }
@@ -12,12 +21,20 @@ class AddPost extends StatefulWidget {
 class _AddPostState extends State<AddPost> {
 
   final _addPostFormKey = GlobalKey<FormState>();
+  String _title;
+  String _description;
+  String _link;
+  String add_save_post = "Add Post";
 
   @override
   Widget build(BuildContext context) {
-    String _title;
-    String _description;
-    String _link;
+
+    if(widget.title != null) {
+      _title = widget.title;
+      _description = widget.description;
+      _link = widget.link;
+      add_save_post = "Save Post";
+    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -118,21 +135,34 @@ class _AddPostState extends State<AddPost> {
                           var currentState = _addPostFormKey.currentState;
                           currentState.save();
                           if(currentState.validate()) {
-                            if(_link == null) {
-                              await PostService().addPostWithoutLink(title: _title, description: _description);
-                              setState(() {
-                                _title = "";
-                                _description = "";
-                                _link = "";
-                              });
+                            if(widget.edit == true) {
+                              await PostService().savePost(
+                                oldTitle: widget.oGTitle,
+                                title: _title,
+                                description: _description,
+                                link: _link == null ? "" : _link,
+                                dateTime: widget.dateTime
+                              );
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
                             }
                             else {
-                              await PostService().addPost(title: _title, description: _description, link: _link);
-                              setState(() {
-                                _title = "";
-                                _description = "";
-                                _link = "";
-                              });
+                              if(_link == null) {
+                                await PostService().addPostWithoutLink(title: _title, description: _description);
+                                setState(() {
+                                  _title = "";
+                                  _description = "";
+                                  _link = "";
+                                });
+                              }
+                              else {
+                                await PostService().addPost(title: _title, description: _description, link: _link);
+                                setState(() {
+                                  _title = "";
+                                  _description = "";
+                                  _link = "";
+                                });
+                              }
                             }
                             Scaffold.of(context).showSnackBar(
                               SnackBar(
@@ -144,7 +174,7 @@ class _AddPostState extends State<AddPost> {
                             );
                           }
                         },
-                        child: Text("Add Post", style: TextStyle(color: Theme.of(context).primaryColor),)
+                        child: Text(add_save_post, style: TextStyle(color: Theme.of(context).primaryColor),)
                       );
                     }
                   ),

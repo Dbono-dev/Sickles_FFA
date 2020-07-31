@@ -297,7 +297,7 @@ class _MyHomePageState extends State<LoginPage> {
                                     ),
                                   ),
                                   onPressed: () async {
-                                    showInSnackBar("Logining In...");
+                                    showInSnackBar("LOGINING IN...");
                                     final signInForm = _signInFormKey.currentState;
                                     signInForm.save();
                                     if(signInForm.validate()) {

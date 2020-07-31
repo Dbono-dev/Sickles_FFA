@@ -97,20 +97,37 @@ class PostService {
   final CollectionReference postCollection = Firestore.instance.collection('posts');
 
   Future addPost({String title, String description, String link}) async {
-    return await postCollection.document(DateTime.now().toString() + title).setData({
+    String dateTime = DateTime.now().toString();
+    return await postCollection.document(dateTime + title).setData({
       'title': title,
       'description': description,
       'link': link,
-      'dateTime': DateTime.now().toString()
+      'dateTime': dateTime,
+      'oGTitle': title
     });
   }
 
   Future addPostWithoutLink({String title, String description}) async {
-    return await postCollection.document(DateTime.now().toString() + title).setData({
+    String dateTime = DateTime.now().toString();
+    return await postCollection.document(dateTime + title).setData({
+      'title': title,
+      'oGTitle': title,
+      'description': description,
+      'dateTime': dateTime
+    });
+  }
+
+  Future savePost({String oldTitle, String dateTime, String title, String description, String link}) async {
+    return await postCollection.document(dateTime + oldTitle).updateData({
       'title': title,
       'description': description,
-      'dateTime': DateTime.now().toString()
+      'dateTime': dateTime,
+      'link': link
     });
+  }
+
+  Future deletePost(String dateTime, String title) async {
+    return await postCollection.document(dateTime + title).delete();
   }
 }
 

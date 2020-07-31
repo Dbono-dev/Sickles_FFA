@@ -5,7 +5,6 @@ import 'package:ffa_app/size_config.dart';
 import 'package:ffa_app/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class SendMessages extends StatefulWidget {
@@ -52,38 +51,6 @@ class _SendMessagesState extends State<SendMessages> {
 
           return Scaffold(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              leading: Card(
-                color: Theme.of(context).primaryColor,
-                elevation: 10,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)
-                ),
-                child: Center(
-                  child: IconButton(
-                    alignment: Alignment.center,
-                    iconSize: 35,
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    color: Theme.of(context).accentColor,
-                  ),
-                ),
-              ),
-              centerTitle: true,
-              title: Material(
-                color: Colors.transparent,
-                child: Center(
-                  child: Text(
-                    recieverName, 
-                    style: TextStyle(fontSize: 40, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),
-                  )
-                )
-              ),
-            ),
             body: SingleChildScrollView(
               child: Container(
                 height: SizeConfig.blockSizeVertical * 100,
@@ -91,10 +58,28 @@ class _SendMessagesState extends State<SendMessages> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget> [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        ReturnButton(),
+                        Padding(padding: EdgeInsets.only(right: 20),),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 7.5),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              recieverName, 
+                              style: TextStyle(fontSize: 40, color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),
+                            )
+                          ),
+                        ),
+                      ],
+                    ),
                     Container(
                       width: SizeConfig.blockSizeHorizontal * 97.5,
-                      height: SizeConfig.blockSizeVertical * 76,
-                      padding: EdgeInsets.fromLTRB(10, 15, 10, 5),
+                      height: SizeConfig.blockSizeVertical * 70,
+                      padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                       child: Card(
                         elevation: 10,
                         shape: RoundedRectangleBorder(

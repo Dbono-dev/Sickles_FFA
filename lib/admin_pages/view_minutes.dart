@@ -177,7 +177,7 @@ class _ViewMinutesState extends State<ViewMinutes> {
                   height: SizeConfig.blockSizeVertical * 65,
                   child: ListView.builder(
                     itemCount: snapshot.data.length,
-                    padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 10, 0, SizeConfig.blockSizeHorizontal * 10, 0),
+                    padding: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal * 5, 0, SizeConfig.blockSizeHorizontal * 5, 0),
                     itemBuilder: (_, index) {
                       return officerMinutesCard(snapshot.data[index], context);
                     }
@@ -199,7 +199,7 @@ class _ViewMinutesState extends State<ViewMinutes> {
       builder: (context, setState) {
         return Container(
           height: SizeConfig.blockSizeVertical * 30,
-          width: SizeConfig.blockSizeHorizontal * 85,
+          width: SizeConfig.blockSizeHorizontal * 90,
           child: GestureDetector(
             onTap: () async {
               await LaunchFile.loadFromFirebase(context, snapshot.data['date']).then((url) => LaunchFile.createFileFromPdfUrl(url, snapshot.data['date']).then((f) => setState(() {
@@ -218,7 +218,7 @@ class _ViewMinutesState extends State<ViewMinutes> {
               elevation: 10,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 5, 0, 10),
+                padding: const EdgeInsets.fromLTRB(3.5, 5, 3.5, 10),
                 child: Column(
                   children: <Widget>[
                     Text("Officer Meeting Minutes - " + snapshot.data['date'], style: TextStyle(color: Theme.of(context).accentColor, fontSize: 25), textAlign: TextAlign.center,),

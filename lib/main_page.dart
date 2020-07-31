@@ -94,7 +94,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                         participatesInfo: snapshot.data[i].data['participates info'],
                         participatesName: snapshot.data[i].data['participates name'],
                         maxParticipates: snapshot.data[i].data['max participates'],
-                        key: snapshot.data[i].data['key'],
+                        key: snapshot.data[i].data['key'].toString(),
                         informationDialog: snapshot.data[i].data['information dialog']
                     ));
                   }
@@ -361,18 +361,15 @@ class _MainPageBodyState extends State<EventCard> {
                       ),
                     )
                   ),
-                  Container(
-                    padding: EdgeInsets.only(top: 2),
-                    height: SizeConfig.blockSizeVertical * 17.5,
+                  Expanded(
                     child: SingleChildScrollView(
                       child: Text(
                         description, 
-                        style: TextStyle(color: Colors.white, fontSize: 25), 
+                        style: TextStyle(color: Colors.white, fontSize: 20), 
                         textAlign: TextAlign.center,
                       )
                     )
                   ),
-                  Spacer(),
                   Text(location, style: TextStyle(color: Colors.white, fontSize: 20), textAlign: TextAlign.center,),
                   Text(startTime + startTimeBack + " - " + endTime + endTimeBack, style: TextStyle(color: Colors.white, fontSize: 20)),
                   Text("View Event", style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35, decoration: TextDecoration.underline, fontWeight: FontWeight.bold))

@@ -167,7 +167,7 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           Container(
-            height: userData.permissions == 3 ? SizeConfig.blockSizeVertical * 53 : SizeConfig.blockSizeVertical * 32,
+            height: userData.permissions == 3 ? SizeConfig.blockSizeVertical * 53 : SizeConfig.blockSizeVertical * 28,
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[
@@ -264,7 +264,7 @@ class ProfilePage extends StatelessWidget {
               children: <Widget>[
                 Text(title, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30),),
                 Spacer(),
-                Text(date,style: TextStyle(color: Theme.of(context).accentColor, fontSize: 30))
+                Text(date,style: TextStyle(color: Theme.of(context).accentColor, fontSize: 20))
               ],
             ),
           ),

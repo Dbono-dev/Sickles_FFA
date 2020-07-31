@@ -11,7 +11,7 @@ class ViewMessages extends StatelessWidget {
 
   Future getPosts() async {
     var firestore = Firestore.instance;
-    QuerySnapshot qn = await firestore.collection("messages").getDocuments();
+    QuerySnapshot qn = await firestore.collection("messages").orderBy('date', descending: true).getDocuments();
     return qn.documents;
   }
 
@@ -42,10 +42,13 @@ class ViewMessages extends StatelessWidget {
                     String description = index.data[i].data['text'];
                     String date = index.data[i].data['date'];
                     String uid = index.data[i].data['uid'];
-                    theMessagesWidget.add(_conversationPreviews(context, receiverName, description, date, uid));
+                    theMessagesWidget.add(
+                      _conversationPreviews(context, receiverName, description, date, uid)
+                    );
                   }
                   if(theMessagesWidget.length > 0) {
                     return ListView.builder(
+                      padding: EdgeInsets.zero,
                       itemCount: theMessagesWidget.length,
                       itemBuilder: (_, index) {
                         return theMessagesWidget[index];
