@@ -33,6 +33,7 @@ class _ExportDataState extends State<ExportData> {
   String studentNum;
 
   ExportDataOptions _choice;
+  int x = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -134,6 +135,7 @@ class _ExportDataState extends State<ExportData> {
                     color: Theme.of(context).accentColor
                   )),
                   onPressed: () async {
+                    x = 0;
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -164,12 +166,25 @@ class _ExportDataState extends State<ExportData> {
             child: Text("Cancel")
           ),
           FlatButton(
-            onPressed: () async  {
+            onPressed: () async {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    content: Container(
+                      padding: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 27.5),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+              );
               QuerySnapshot qn = await Firestore.instance.collection('members').getDocuments();
               var result = qn.documents;
               for(int i = 0; i < result.length; i++) {
                 DocumentSnapshot theResult = result[i];
-                _submitForm(theResult, numOfTimes: result.length);
+                await _submitForm(theResult, numOfTimes: result.length);
               }
             },
             child: Text("Confirm")
@@ -191,8 +206,8 @@ class _ExportDataState extends State<ExportData> {
                   for(int i = 0; i < snapshot.data.length; i++) {
                     theEvents.add(
                       GestureDetector(
-                        onTap: () {
-                          _submitEventForm(snapshot.data[i]);
+                        onTap: () async {
+                          await _submitEventForm(snapshot.data[i]);
                         },
                         child: Card(
                           elevation: 10,
@@ -241,14 +256,32 @@ class _ExportDataState extends State<ExportData> {
               builder: (_, snapshot) {
                 if(snapshot.hasData) {
                   List<Widget> theGrades = new List<Widget> ();
-                  for(int i = 10; i < 13; i++) {
+                  for(int i = 9; i < 13; i++) {
                     theGrades.add(
                       GestureDetector(
                         onTap: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                elevation: 0,
+                                backgroundColor: Colors.transparent,
+                                content: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 27.5),
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+                          );
+                          int numOfTimes = 0;
                           for(int a = 0; a < snapshot.data.length; a++) {
                             if(int.tryParse(snapshot.data[a].data['grade']) == i) {
-                              _submitForm(snapshot.data[a]);
-                              await Future.delayed(Duration(seconds: 2));
+                              numOfTimes++;
+                            }
+                          }
+                          for(int a = 0; a < snapshot.data.length; a++) {
+                            if(int.tryParse(snapshot.data[a].data['grade']) == i) {
+                              await _submitForm(snapshot.data[a], numOfTimes: numOfTimes);
                             }
                           }
                         },
@@ -303,8 +336,8 @@ class _ExportDataState extends State<ExportData> {
                   for(int i = 0; i < snapshot.data.length; i++) {
                     theEvents.add(
                       GestureDetector(
-                        onTap: () {
-                          _submitForm(snapshot.data[i], numOfTimes: 1);
+                        onTap: () async {
+                          await _submitForm(snapshot.data[i], numOfTimes: 1);
                         },
                         child: Card(
                           elevation: 10,
@@ -359,15 +392,13 @@ class _ExportDataState extends State<ExportData> {
   }
 
   Future _submitForm(DocumentSnapshot snapshot, {int numOfTimes}) async {
-    int x = 0;
-
     FeedbackForm feedbackForm = FeedbackForm(
       snapshot.data['last name'].toString(),
       snapshot.data['first name'].toString(),
       snapshot.data['grade'].toString(),
-      snapshot.data['student number'].toString(),
+      snapshot.data['student num'].toString(),
       snapshot.data['event title'],
-      snapshot.data['event date'],
+      snapshot.data['club attendence'],
     );
 
     ExportPersonFormController formController = ExportPersonFormController((String response) {
@@ -375,6 +406,7 @@ class _ExportDataState extends State<ExportData> {
       if(response == FormController.STATUS_SUCCESS) {
         x++;
         if(x == numOfTimes) {
+          Navigator.of(context).pop();
           Navigator.of(context).pop();
         }
       }
@@ -387,9 +419,11 @@ class _ExportDataState extends State<ExportData> {
     EventForm theEventForm = EventForm(
       snapshot.data['title'].toString(),
       snapshot.data['date'].toString().substring(0, 10),
-      snapshot.data['start time'].toString() + ":" + snapshot.data['start time minutes'].toString(),
-      snapshot.data['end time'].toString() + ":" + snapshot.data['end time minutes'].toString(),
-      snapshot.data['type'].toString()
+      snapshot.data['start time'].toString(),
+      snapshot.data['end time'].toString(),
+      snapshot.data['type'].toString(),
+      snapshot.data['participates name'],
+      snapshot.data['participates info']
     );
 
 
@@ -406,15 +440,17 @@ class _ExportDataState extends State<ExportData> {
 
 
 class EventForm {
-  String _title;
-  String _date;
-  String _startTime;
-  String _endTime;
-  String _type;
+  final String _title;
+  final String _date;
+  final String _startTime;
+  final String _endTime;
+  final String _type;
+  var participants;
+  var participantsInfo;
 
-  EventForm(this._title, this._date, this._startTime, this._endTime, this._type);
+  EventForm(this._title, this._date, this._startTime, this._endTime, this._type, this.participants, this.participantsInfo);
 
-  String toParams() => "?title=$_title&date=$_date&startTime=$_startTime&endTime=$_endTime&type=$_type";
+  String toParams() => "?title=$_title&date=$_date&startTime=$_startTime&endTime=$_endTime&type=$_type&participants=$participants&participantsInfo=$participantsInfo";
 }
 
 
@@ -424,16 +460,16 @@ class FeedbackForm {
   String _grade;
   String _studentNum;
   List _eventTitle;
-  List _eventDate;
+  var _clubAttendence;
 
-  FeedbackForm(this._lastName, this._firstName, this._grade, this._studentNum, this._eventTitle, this._eventDate);
+  FeedbackForm(this._lastName, this._firstName, this._grade, this._studentNum, this._eventTitle, this._clubAttendence);
 
-  String toParams() => "?lastName=$_lastName&firstName=$_firstName&grade=$_grade&studentNum=$_studentNum&eventTitle=$_eventTitle&eventDate=$_eventDate";
+  String toParams() => "?lastName=$_lastName&firstName=$_firstName&grade=$_grade&studentNum=$_studentNum&eventTitle=$_eventTitle&clubAttendence=$_clubAttendence";
 }
 
 class FormController {
   final void Function(String) callback;
-  static const String URL = "https://script.google.com/macros/s/AKfycbyrDN8nw3eEBfIb84Yx-OVuzUj3i3EKfhv-DK3A-_qr015Yb-DR/exec";
+  static const String URL = "https://script.google.com/macros/s/AKfycbw_uUV-p22JHKLWmTnfQYLf_Gxm_tygss1s5rCKY7CuZIkC2FlR/exec";
 
   static const STATUS_SUCCESS = "SUCCESS";
 

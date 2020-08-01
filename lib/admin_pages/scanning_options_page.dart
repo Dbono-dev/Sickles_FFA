@@ -33,10 +33,11 @@ class ScanningOptionsPage extends StatelessWidget {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => location));
         },
         child: Card(
+          color: Theme.of(context).primaryColor,
           elevation: 10,
           child: ListTile(
-            title: Text(text),
-            trailing: Icon(Icons.arrow_forward)
+            title: Text(text, style: TextStyle(color: Theme.of(context).accentColor),),
+            trailing: Icon(Icons.arrow_forward, color: Theme.of(context).accentColor,)
           )
         ),
       ),

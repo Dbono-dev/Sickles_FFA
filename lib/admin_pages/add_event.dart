@@ -118,11 +118,47 @@ class _AddEventState extends State<AddEvent> {
     }
 
     if(_startTime != null) {
-      theStartTime = _startTime.toString() + ":" + _startTimeMinutes.toString();
+      String theStartTimeMinutes;
+      String back;
+      if(_startTimeMinutes == 0) {
+        theStartTimeMinutes = "00";
+      }
+      else {
+        theStartTimeMinutes = _startTimeMinutes.toString();
+      }
+      if(_startTime > 12) {
+        _startTime = _startTime - 12;
+        back = ' pm';
+      }
+      else if(_startTime == 12) {
+        back = ' pm';
+      }
+      else {
+        back = ' am';
+      }
+      theStartTime = _startTime.toString() + ":" + theStartTimeMinutes + back;
     }
 
     if(_endTime != null) {
-      theEndTime = _endTime.toString() + ":" + _endTimeMinutes.toString();
+      String theEndTimeMinutes;
+      String back;
+      if(_endTimeMinutes == 0) {
+        theEndTimeMinutes = "00";
+      }
+      else {
+        theEndTimeMinutes = _endTimeMinutes.toString();
+      }
+      if(_endTime > 12) {
+        _endTime = _endTime - 12;
+        back = ' pm';
+      }
+      else if(_endTime == 12) {
+        back = ' pm';
+      }
+      else {
+        back = ' am';
+      }
+      theEndTime = _endTime.toString() + ":" + theEndTimeMinutes + back;
     }
 
     String startingDate;
@@ -352,15 +388,14 @@ class _AddEventState extends State<AddEvent> {
                             color: Theme.of(context).accentColor
                           )),
                           onPressed: () async {
-                            print("clicked");
                             final form = _thirdformKey.currentState;
                             form.save();
-                            print("got here");
                             if(widget.type == "club") {
                               await DatabaseImporantDates().updateAgenda(event.type, event.type, _description);
                               Navigator.of(context).pop();
                             }
                             else if(form.validate()) {
+                              
                               try {
                                 try {
                                   _date = _newDateTime.toString().substring(5, 7) + "-" + _newDateTime.toString().substring(8, 10) + "-" + _newDateTime.toString().substring(0, 4);
@@ -371,7 +406,11 @@ class _AddEventState extends State<AddEvent> {
                                 if(_startTime == null || _startTimeMinutes == null || _endTime == null || _endTimeMinutes == null) {
                                   await showErrorDialog("Please make sure to have both a start time and end time");
                                 }
+                                else if(checkStartEndTime()) {
+                                  await showErrorDialog("Please make sure that the start time is before the end time");
+                                }
                                 else {
+                                  print("got here");
                                   String _startTimeString;
                                   String _endTimeString;
                                   if(_startTime < 10) {
@@ -418,7 +457,7 @@ class _AddEventState extends State<AddEvent> {
                               }
                             } 
                             else {
-                              return Container();
+                              return print("don't work");
                             }}
                         );
                       },
@@ -444,7 +483,7 @@ class _AddEventState extends State<AddEvent> {
       builder: (context) {
         return AlertDialog(
           title: Text("Error"),
-          content: Text(text),
+          content: Text(text, textAlign: TextAlign.center),
           actions: <Widget>[
             FlatButton(
               onPressed: () => Navigator.of(context).pop(), 
@@ -454,5 +493,33 @@ class _AddEventState extends State<AddEvent> {
         );
       }
     );
+  }
+
+  bool checkStartEndTime() {
+    String todaysDate = DateTime.now().toIso8601String().substring(0, 10);
+    String startTimeMinutes;
+    String endTimeMinutes;
+    if(_startTimeMinutes == 0) {
+      startTimeMinutes = "00";
+    }
+    else {
+      startTimeMinutes = _startTimeMinutes.toString();
+    }
+    if(_endTimeMinutes == 0) {
+      endTimeMinutes = "00";
+    }
+    else {
+      endTimeMinutes = _endTimeMinutes.toString();
+    }
+    DateTime startTime = DateTime.parse(todaysDate + ' ' + _startTime.toString() + ':' + startTimeMinutes);
+    DateTime endTime = DateTime.parse(todaysDate + ' ' + _endTime.toString() + ':' + endTimeMinutes);
+    print(startTime);
+    print(endTime);
+    if(startTime.isAfter(endTime)) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 }
