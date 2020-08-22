@@ -154,7 +154,10 @@ class _ImportantDatesState extends State<ImportantDates> {
 
   Widget setClubDates(String editOrNew, String type, String oldDate, String quarter, var partipates, String agenda) {
     DateFormat format = new DateFormat("MM-dd-yyyy");
-    DateTime editDate = format.parse(oldDate);
+    DateTime editDate;
+    if(editOrNew == "edit") {
+      editDate = format.parse(oldDate);
+    }
     return Container(
       height: SizeConfig.blockSizeVertical * 43,
       child: Column(

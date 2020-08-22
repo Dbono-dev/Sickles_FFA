@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ffa_app/main.dart';
 import 'package:ffa_app/size_config.dart';
@@ -128,8 +129,8 @@ class ViewImages extends StatelessWidget {
                       );
                     },
                 ),
+              )
               ),
-            )
           ],
         ),
       ),

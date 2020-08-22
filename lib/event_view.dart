@@ -68,7 +68,7 @@ class _EventViewPageState extends State<EventViewPage> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          height: widget.userData.permissions == 1 || widget.userData.permissions == 2 ? SizeConfig.blockSizeVertical * 145 : SizeConfig.blockSizeVertical * 100,
+          height: SizeConfig.blockSizeVertical * 145,
           color: Colors.white,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -208,7 +208,7 @@ class _EventViewPageState extends State<EventViewPage> {
                 ),
               ),
               show == false || widget.userData.permissions > 1 || event.type == "clubDates" ? Container() : signUpButton(event, user),
-              (widget.userData.permissions == 1 || widget.userData.permissions == 2) && event.type != "clubDates" ? viewParticipates(event.participatesName, event.participatesInfo, event.informationDialog) : Container(),
+              event.type != "clubDates" ? viewParticipates(event.participatesName, event.participatesInfo, event.informationDialog) : Container(),
             ]
           ),
         ),

@@ -15,6 +15,7 @@ import 'package:ffa_app/member_pages/send_images.dart';
 import 'package:ffa_app/member_pages/send_message.dart';
 import 'package:ffa_app/settings.dart';
 import 'package:ffa_app/user.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:ffa_app/styles.dart';
 
@@ -44,7 +45,7 @@ class ProfilePage extends StatelessWidget {
                       children: <Widget>[
                         Text(userData.firstName, style: topOfProfilePage),
                         Text(userData.lastName, style: topOfProfilePage),
-                        int.tryParse(userData.grade) == null ? Text(userData.grade, style: topOfProfilePage) : Text(userData.grade.toString() + "th Grade", style: topOfProfilePage)
+                        int.tryParse(userData.grade) == null ? Text(userData.grade, style: topOfProfilePage.copyWith(fontWeight: FontWeight.w400)) : Text(userData.grade.toString() + "th Grade", style: topOfProfilePage)
                       ],
                     ),
                     Card(
@@ -93,7 +94,7 @@ class ProfilePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Icon(icon, color: Theme.of(context).accentColor, size: 40,),
-                  Text(title,style: TextStyle(color: Theme.of(context).accentColor, fontSize: 35))
+                  Text(title, style: GoogleFonts.balooTamma(color: Theme.of(context).accentColor, fontSize: 35))
                 ],
               ),
             ),
@@ -129,45 +130,9 @@ class ProfilePage extends StatelessWidget {
               }
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                SizedBox(
-                  width: SizeConfig.safeBlockHorizontal * 65,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      "More Actions", 
-                      style: TextStyle(
-                        fontSize: 45, 
-                        color: Theme.of(context).accentColor,
-                         decoration: TextDecoration.underline
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: SizeConfig.blockSizeHorizontal * 25,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    alignment: Alignment.center,
-                    child: RaisedButton(
-                      elevation: 10,
-                      child: Text("Logout", style: TextStyle(color: Theme.of(context).accentColor),), 
-                      onPressed: () {
-                        _auth.logout();
-                      },
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
+          moreActionsLogout(context, _auth),
           Container(
-            height: userData.permissions == 3 ? SizeConfig.blockSizeVertical * 53 : SizeConfig.blockSizeVertical * 28,
+            height: userData.permissions == 3 ? SizeConfig.blockSizeVertical * 53 : SizeConfig.blockSizeVertical * 26,
             child: ListView(
               padding: EdgeInsets.all(0),
               children: <Widget>[
@@ -189,43 +154,7 @@ class ProfilePage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Padding(
-            padding: EdgeInsets.fromLTRB(15, SizeConfig.blockSizeVertical * 2, 0, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                SizedBox(
-                  width: SizeConfig.safeBlockHorizontal * 65,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      "More Actions", 
-                      style: TextStyle(
-                        fontSize: 45, 
-                        color: Theme.of(context).accentColor,
-                         decoration: TextDecoration.underline
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: SizeConfig.blockSizeHorizontal * 25,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    alignment: Alignment.center,
-                    child: RaisedButton(
-                      elevation: 10,
-                      child: Text("Logout", style: TextStyle(color: Theme.of(context).accentColor),), 
-                      onPressed: () {
-                        _auth.logout();
-                      },
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
+          moreActionsLogout(context, _auth),
           Container(
             height: SizeConfig.blockSizeVertical * 54,
             child: ListView(
@@ -269,6 +198,50 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
         )
+      ),
+    );
+  }
+
+  Widget moreActionsLogout(BuildContext context, AuthService _auth) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(15, SizeConfig.blockSizeVertical * 2, 0, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          SizedBox(
+            width: SizeConfig.safeBlockHorizontal * 65,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Text(
+                "More Actions", 
+                style: GoogleFonts.ubuntu(
+                  fontSize: 45, 
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).accentColor,
+                    decoration: TextDecoration.underline
+                ),
+              ),
+            ),
+          ),
+          Container(
+            width: SizeConfig.blockSizeHorizontal * 25,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              alignment: Alignment.center,
+              child: RaisedButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)
+                ),
+                elevation: 10,
+                child: Text("Logout", style: TextStyle(color: Theme.of(context).accentColor),), 
+                onPressed: () {
+                  _auth.logout();
+                },
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
