@@ -10,6 +10,7 @@ import 'package:ffa_app/user.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key key}) : super(key: key);
@@ -37,8 +38,6 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
 
     SizeConfig().init(context);
-    int _index = 0;
-
     final user = Provider.of<User>(context);
 
     String timeOfDay = "";
@@ -216,14 +215,14 @@ class _TheLargeMainPageState extends State<TheLargeMainPage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget> [
-                Padding(padding: EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical * 3)),
-                Text(widget.timeOfDay, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold)),
-                Text(userData.firstName, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 45, fontWeight: FontWeight.bold),),
+                Padding(padding: EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical * 4.5)),
+                Text(widget.timeOfDay, style: GoogleFonts.balooTamma(color: Theme.of(context).accentColor, fontSize: 40, height: 1)),
+                Text(userData.firstName, style: GoogleFonts.balooTamma(color: Theme.of(context).accentColor, fontSize: 40, height: 1),),
                 Padding(padding: EdgeInsets.all(6)),
                 Center(
                   child: SizedBox(
                     height: SizeConfig.blockSizeVertical * 60,
-                    child: widget.type == "NOEVENTS" ? Center(child: Text("NO EVENTS", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 35),)) : PageView.builder(
+                    child: widget.type == "NOEVENTS" ? Center(child: Text("NO EVENTS", style: GoogleFonts.balooTamma(color: Theme.of(context).accentColor, fontSize: 30),)) : PageView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: widget.theEventList.length,
                       controller: PageController(viewportFraction: 0.825),
@@ -333,7 +332,7 @@ class _MainPageBodyState extends State<EventCard> {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventViewPage(event: event, userData: userData,)));
       },
       child: Container(
-        height: SizeConfig.blockSizeVertical * 60,
+        height: SizeConfig.blockSizeVertical * 50,
         width: SizeConfig.blockSizeHorizontal * 75,   
         color: Colors.transparent,         
         child: Card(

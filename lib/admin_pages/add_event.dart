@@ -395,7 +395,6 @@ class _AddEventState extends State<AddEvent> {
                               Navigator.of(context).pop();
                             }
                             else if(form.validate()) {
-                              
                               try {
                                 try {
                                   _date = _newDateTime.toString().substring(5, 7) + "-" + _newDateTime.toString().substring(8, 10) + "-" + _newDateTime.toString().substring(0, 4);
@@ -406,9 +405,9 @@ class _AddEventState extends State<AddEvent> {
                                 if(_startTime == null || _startTimeMinutes == null || _endTime == null || _endTimeMinutes == null) {
                                   await showErrorDialog("Please make sure to have both a start time and end time");
                                 }
-                                else if(checkStartEndTime()) {
-                                  await showErrorDialog("Please make sure that the start time is before the end time");
-                                }
+                                //else if(checkStartEndTime()) {
+                                  //await showErrorDialog("Please make sure that the start time is before the end time");
+                                //}
                                 else {
                                   print("got here");
                                   String _startTimeString;
